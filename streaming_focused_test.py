@@ -145,15 +145,15 @@ class StreamingFocusedTester:
             
         headers = {"Authorization": f"Bearer {self.tokens['model']}"}
         
-        # Test updating model status to live
-        status_data = {
+        # Test updating model status to live (using query parameters)
+        params = {
             "is_live": True,
             "is_available": True
         }
         
         try:
             response = self.session.patch(f"{API_BASE}/streaming/models/status", 
-                                        json=status_data, headers=headers)
+                                        params=params, headers=headers)
             self.assert_test(
                 response.status_code == 200,
                 f"Model status update successful: {response.status_code}",
