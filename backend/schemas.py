@@ -68,6 +68,7 @@ class ModelProfileResponse(BaseModel):
     display_name: str
     bio: Optional[str] = None
     avatar_url: Optional[str] = None
+    thumbnail: Optional[str] = None
     show_rate: int
     is_live: bool
     is_available: bool
