@@ -645,17 +645,17 @@ export const IntegratedStreamingInterface = () => {
         
         console.log(`📈 IntegratedComponents: Model counts - Previous: ${previousCount}, New: ${newModelsCount}`);
         
-        // If new models came online, increase polling frequency briefly
+        // If new models came online, increase polling frequency briefly - using 15 seconds as base
         if (newModelsCount > previousCount) {
-          setPollInterval(2000); // Poll every 2 seconds when new models come online
+          setPollInterval(10000); // Poll every 10 seconds when new models come online
           setTimeout(() => {
-            setPollInterval(5000); // Return to 5 seconds after 2 minutes
+            setPollInterval(15000); // Return to 15 seconds after 2 minutes
           }, 120000);
         } else if (newModelsCount < previousCount) {
           // If models went offline, also increase polling briefly  
-          setPollInterval(2000);
+          setPollInterval(10000);
           setTimeout(() => {
-            setPollInterval(5000);
+            setPollInterval(15000);
           }, 120000);
         }
         
