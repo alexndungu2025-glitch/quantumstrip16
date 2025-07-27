@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { Header } from '../components';
+import { useResponsive } from '../responsive';
 import useWebRTCStreaming, { VIDEO_QUALITY_PRESETS } from '../hooks/useWebRTCStreaming';
 import useWebRTCViewer from '../hooks/useWebRTCViewer';
 
@@ -9,7 +10,9 @@ import useWebRTCViewer from '../hooks/useWebRTCViewer';
 export const ModelLiveStreamingInterface = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { isMobile, isTablet } = useResponsive();
   const [showQualityMenu, setShowQualityMenu] = useState(false);
+  const [showSidePanel, setShowSidePanel] = useState(!isMobile); // Hide side panel on mobile by default
   const [earnings, setEarnings] = useState(0);
   const [sessionDuration, setSessionDuration] = useState(0);
 
