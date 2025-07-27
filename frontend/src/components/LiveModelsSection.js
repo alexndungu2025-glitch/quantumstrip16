@@ -193,9 +193,15 @@ const LiveModelsSection = () => {
     <div className="bg-gray-900 rounded-xl p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">🔴 Live Now</h2>
-        <div className="flex items-center text-green-400">
-          <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-          <span>{liveModels.length} model{liveModels.length !== 1 ? 's' : ''} live</span>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center text-blue-400">
+            <div className="w-3 h-3 bg-blue-500 rounded-full mr-2 animate-pulse"></div>
+            <span>{modelCounts.online_models} model{modelCounts.online_models !== 1 ? 's' : ''} online</span>
+          </div>
+          <div className="flex items-center text-green-400">
+            <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+            <span>{modelCounts.live_models} model{modelCounts.live_models !== 1 ? 's' : ''} live</span>
+          </div>
         </div>
       </div>
       
