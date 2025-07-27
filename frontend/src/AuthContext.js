@@ -117,13 +117,24 @@ export const AuthProvider = ({ children }) => {
             payload: { user, token } 
           });
         } catch (error) {
-          // Token is invalid, clear local storage
-          localStorage.removeItem('quantumstrip_token');
-          localStorage.removeItem('quantumstrip_user');
-          dispatch({ 
-            type: AuthActionTypes.LOAD_USER_FAILURE, 
-            payload: 'Session expired' 
-          });
+          // Only clear storage if it's actually an auth error (401/403)
+          // Don't logout users for network issues or server errors
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            localStorage.removeItem('quantumstrip_token');
+            localStorage.removeItem('quantumstrip_user');
+            dispatch({ 
+              type: AuthActionTypes.LOAD_USER_FAILURE, 
+              payload: 'Session expired' 
+            });
+          } else {
+            // For network errors or server issues, keep user logged in with saved data
+            console.warn('Profile fetch failed but keeping user logged in:', error);
+            const savedUserData = JSON.parse(savedUser);
+            dispatch({ 
+              type: AuthActionTypes.LOGIN_SUCCESS, 
+              payload: { user: savedUserData, token } 
+            });
+          }
         }
       } else {
         dispatch({ 
