@@ -537,6 +537,42 @@ async def get_live_models():
             detail="Failed to get live models"
         )
 
+@router.get("/models/online")
+async def get_online_models():
+    """Get count of currently online models (including both live and available)"""
+    try:
+        db = await get_database()
+        
+        # Count online models (those who have been active recently or are available)
+        # Consider a model online if they're either available or were active in the last hour
+        from datetime import datetime, timedelta
+        one_hour_ago = datetime.utcnow() - timedelta(hours=1)
+        
+        online_count = await db.model_profiles.count_documents({
+            "$or": [
+                {"is_available": True},
+                {"last_online": {"$gte": one_hour_ago}}
+            ]
+        })
+        
+        # Count live models specifically
+        live_count = await db.model_profiles.count_documents({
+            "is_live": True,
+            "is_available": True
+        })
+        
+        return {
+            "online_models": online_count,
+            "live_models": live_count
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting online models count: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get online models count"
+        )
+
 @router.patch("/models/status")
 async def update_model_status(
     is_live: bool,
