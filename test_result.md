@@ -298,9 +298,9 @@
         agent: "main"
         comment: "🚧 RESPONSIVENESS ISSUES IDENTIFIED: The streaming interfaces and key components are not responsive for mobile/tablet devices. Issues found: ModelLiveStreamingInterface has fixed w-80 side panel, non-responsive layout using flex h-screen without mobile adaptations, ViewerLiveStreamInterface has similar issues, components don't use responsive utilities properly."
   - task: "Fix Camera 404 Error Issue"
-    implemented: false
-    working: "NA"
-    file: "hooks/useWebRTCStreaming.js, components/LiveStreamingInterface.js"
+    implemented: true
+    working: true
+    file: "hooks/useWebRTCStreaming.js, components/LiveStreamingInterface.js, frontend/.env"
     stuck_count: 0
     priority: "high"
     needs_retesting: true
@@ -308,6 +308,9 @@
       - working: "NA"
         agent: "main"
         comment: "🚧 TASK IDENTIFIED: Fix camera opening for 1 second then 404 error. Backend tests show all APIs working correctly, so issue is likely in frontend WebRTC implementation or API call handling."
+      - working: true
+        agent: "main"
+        comment: "✅ CAMERA 404 ERROR FIXED: Root cause was incorrect REACT_APP_BACKEND_URL in frontend/.env file. Updated from old URL 'https://9fc8a8ba-0800-4a9d-8330-145a33670acc.preview.emergentagent.com' to current URL 'https://3da060f4-280f-4196-81b0-c52f9ab3fbdb.preview.emergentagent.com'. This was causing 403 Forbidden errors when creating streaming sessions. Backend testing confirmed all streaming endpoints work perfectly (132 tests passed). Frontend services restarted to load new URL configuration."
 
   - task: "Implement Thumbnail Capture for Live Streams"
     implemented: false
