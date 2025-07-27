@@ -177,6 +177,13 @@ export const streamingAPI = {
     return response.data;
   },
 
+  updateModelThumbnail: async (modelId, thumbnailData) => {
+    const response = await api.patch(`/streaming/models/${modelId}/thumbnail`, {
+      thumbnail: thumbnailData
+    });
+    return response.data;
+  },
+
   // Legacy methods for backward compatibility
   createSession: async (sessionData) => {
     const response = await api.post('/streaming/session', sessionData);
