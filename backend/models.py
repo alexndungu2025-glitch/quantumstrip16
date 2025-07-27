@@ -77,6 +77,7 @@ class ModelProfile(BaseModel):
     display_name: str
     bio: Optional[str] = None
     avatar_url: Optional[str] = None
+    thumbnail: Optional[str] = None  # Base64 encoded thumbnail image
     
     # Streaming settings
     show_rate: int = 20  # tokens per minute
