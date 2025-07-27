@@ -93,22 +93,35 @@ const LiveModelsSection = () => {
   const [liveModels, setLiveModels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pollInterval, setPollInterval] = useState(30000); // Start with 30 seconds
   const navigate = useNavigate();
   const { user } = useAuth();
 
   useEffect(() => {
     fetchLiveModels();
     
-    // Poll for live models every 30 seconds
-    const interval = setInterval(fetchLiveModels, 30000);
+    // Use variable poll interval
+    const interval = setInterval(fetchLiveModels, pollInterval);
     return () => clearInterval(interval);
-  }, []);
+  }, [pollInterval]);
 
   const fetchLiveModels = async () => {
     try {
       setError(null);
       const models = await streamingAPI.getLiveModels();
+      const newModelsCount = models?.length || 0;
+      const previousCount = liveModels.length;
+      
       setLiveModels(models || []);
+      
+      // If new models came online, increase polling frequency for 5 minutes
+      if (newModelsCount > previousCount) {
+        setPollInterval(5000); // Poll every 5 seconds
+        setTimeout(() => {
+          setPollInterval(30000); // Return to 30 seconds after 5 minutes
+        }, 300000);
+      }
+      
     } catch (err) {
       console.error('Error fetching live models:', err);
       setError('Failed to load live models');
