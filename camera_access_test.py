@@ -165,6 +165,8 @@ def test_camera_access_fix():
         "password": "password123"
     }
     
+    viewer_token = None
+    
     try:
         viewer_response = session.post(f"{API_BASE}/auth/login", json=viewer_login_data)
         if viewer_response.status_code == 200 and model_id:
