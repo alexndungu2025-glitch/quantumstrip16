@@ -314,6 +314,17 @@ export const chatAPI = {
   }
 };
 
+// Tip API  
+export const tipAPI = {
+  sendTip: async (modelId, amount) => {
+    const response = await api.post('/models/tip', {
+      model_id: modelId,
+      amount: amount
+    });
+    return response.data;
+  }
+};
+
 // Utility functions
 export const apiUtils = {
   handleApiError: (error) => {
