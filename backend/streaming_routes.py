@@ -664,3 +664,61 @@ async def get_webrtc_signals(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get WebRTC signals"
         )
+
+# Model Thumbnail Routes
+@router.patch("/models/{model_id}/thumbnail")
+async def update_model_thumbnail(
+    model_id: str,
+    thumbnail: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Update model's thumbnail image"""
+    try:
+        if current_user.role != UserRole.MODEL:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only models can update thumbnails"
+            )
+        
+        db = await get_database()
+        
+        # Verify model profile exists and belongs to current user
+        model_profile = await db.model_profiles.find_one({"_id": model_id})
+        if not model_profile:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Model profile not found"
+            )
+        
+        if model_profile["user_id"] != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to update this model's thumbnail"
+            )
+        
+        # Update thumbnail
+        await db.model_profiles.update_one(
+            {"_id": model_id},
+            {
+                "$set": {
+                    "thumbnail": thumbnail,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        logger.info(f"Thumbnail updated for model {model_id}")
+        
+        return {
+            "success": True,
+            "message": "Thumbnail updated successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating thumbnail: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update thumbnail"
+        )
