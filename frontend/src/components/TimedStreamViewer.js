@@ -137,9 +137,11 @@ const TimedStreamViewer = () => {
     };
   }, [isConnected, hasRemoteStream, maxViewingTime, disconnectFromStream]);
 
-  // Connect to stream when component mounts
+  // Connect to stream when component mounts with retry logic
   useEffect(() => {
     if (modelId) {
+      setRetryCount(0); // Reset retry count for new model
+      setShowConnectionError(false);
       connectToStream(modelId);
     }
     
