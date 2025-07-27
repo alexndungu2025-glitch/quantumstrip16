@@ -213,7 +213,12 @@ const LiveModelsSection = () => {
   return (
     <div className="bg-gray-900 rounded-xl p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-white">🔴 Live Now</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-white">🔴 Live Now</h2>
+          <p className="text-gray-400 text-sm mt-1">
+            {liveModels.length > 0 ? `Choose from ${liveModels.length} live model${liveModels.length !== 1 ? 's' : ''}` : 'No models currently streaming'}
+          </p>
+        </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center text-blue-400">
             <div className="w-3 h-3 bg-blue-500 rounded-full mr-2 animate-pulse"></div>
@@ -223,6 +228,13 @@ const LiveModelsSection = () => {
             <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
             <span>{modelCounts.live_models} model{modelCounts.live_models !== 1 ? 's' : ''} live</span>
           </div>
+          <button 
+            onClick={fetchLiveModelsAndCounts}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg text-sm transition-colors"
+            title="Refresh live models"
+          >
+            🔄 Refresh
+          </button>
         </div>
       </div>
       
