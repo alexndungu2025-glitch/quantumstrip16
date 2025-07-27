@@ -622,6 +622,9 @@ class QuantumStripTester:
         # Focused Streaming Improvements Tests (Review Request)
         self.test_streaming_improvements_review_request()
         
+        # Continuation Requirements Tests (New Review Request)
+        self.test_continuation_requirements()
+        
         # Print final results
         self.print_final_results()
 
