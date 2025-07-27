@@ -117,22 +117,37 @@ const LiveModelsSection = () => {
       
       const newModelsCount = models?.length || 0;
       const previousCount = liveModels.length;
+      const previousModels = liveModels;
+      
+      // Check if specific models went live/offline for better UX
+      const newModelIds = new Set((models || []).map(m => m.model_id));
+      const previousModelIds = new Set(previousModels.map(m => m.model_id));
+      
+      const newlyLive = [...newModelIds].filter(id => !previousModelIds.has(id));
+      const wentOffline = [...previousModelIds].filter(id => !newModelIds.has(id));
       
       setLiveModels(models || []);
       setModelCounts(counts || { online_models: 0, live_models: 0 });
       
-      // If new models came online, increase polling frequency briefly
-      if (newModelsCount > previousCount) {
+      // Dynamic polling based on activity
+      if (newlyLive.length > 0) {
+        console.log(`${newlyLive.length} new model(s) went live`);
         setPollInterval(2000); // Poll every 2 seconds when new models come online
         setTimeout(() => {
           setPollInterval(5000); // Return to 5 seconds after 2 minutes
         }, 120000);
-      } else if (newModelsCount < previousCount) {
-        // If models went offline, also increase polling briefly  
+      } else if (wentOffline.length > 0) {
+        console.log(`${wentOffline.length} model(s) went offline`);
         setPollInterval(2000);
         setTimeout(() => {
           setPollInterval(5000);
         }, 120000);
+      } else if (newModelsCount === 0 && previousCount > 0) {
+        // All models went offline, reduce polling
+        setPollInterval(10000); // 10 seconds when no models are live
+      } else if (newModelsCount > 0 && previousCount === 0) {
+        // First model came online, increase polling
+        setPollInterval(3000); // 3 seconds when first model comes online
       }
       
     } catch (err) {
