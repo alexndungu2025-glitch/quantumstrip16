@@ -37,6 +37,18 @@ const TimedStreamViewer = () => {
     hasRemoteStream
   } = useWebRTCViewer();
 
+  // Synchronize remote video element with stream changes
+  useEffect(() => {
+    if (remoteVideoRef.current && hasRemoteStream) {
+      // The stream should already be set by the hook, but ensure it plays
+      if (remoteVideoRef.current.srcObject) {
+        remoteVideoRef.current.play().catch(err => {
+          console.warn('Could not auto-play remote video:', err);
+        });
+      }
+    }
+  }, [hasRemoteStream, remoteVideoRef]);
+
   // Set viewing time limits based on authentication
   useEffect(() => {
     if (!user) {
