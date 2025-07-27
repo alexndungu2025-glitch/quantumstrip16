@@ -119,11 +119,15 @@ const LiveModelsSection = () => {
   const fetchLiveModelsAndCounts = async () => {
     try {
       setError(null);
+      console.log('🔄 Fetching live models and counts...');
+      
       // Load both live models and model counts
       const [models, counts] = await Promise.all([
         streamingAPI.getLiveModels(),
         streamingAPI.getOnlineModelsCount()
       ]);
+      
+      console.log('📊 API Response - Models:', models, 'Counts:', counts);
       
       const newModelsCount = models?.length || 0;
       const previousCount = liveModels.length;
@@ -135,6 +139,10 @@ const LiveModelsSection = () => {
       
       const newlyLive = [...newModelIds].filter(id => !previousModelIds.has(id));
       const wentOffline = [...previousModelIds].filter(id => !newModelIds.has(id));
+      
+      console.log(`📈 Model counts - Previous: ${previousCount}, New: ${newModelsCount}`);
+      console.log('🔴 Newly live models:', newlyLive);
+      console.log('⚫ Models went offline:', wentOffline);
       
       setLiveModels(models || []);
       setModelCounts(counts || { online_models: 0, live_models: 0 });
@@ -161,7 +169,7 @@ const LiveModelsSection = () => {
       }
       
     } catch (err) {
-      console.error('Error fetching live models:', err);
+      console.error('❌ Error fetching live models:', err);
       setError('Failed to load live models');
     } finally {
       setLoading(false);
