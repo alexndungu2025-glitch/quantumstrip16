@@ -624,7 +624,7 @@ export const IntegratedStreamingInterface = () => {
       try {
         setIsLoading(true);
         const response = await streamingAPI.getLiveModels();
-        const newModels = response.models || [];
+        const newModels = response || []; // Backend returns array directly
         const newModelsCount = newModels.length;
         const previousCount = liveModels.length;
         
