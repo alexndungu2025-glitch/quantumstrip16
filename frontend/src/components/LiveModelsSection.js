@@ -177,7 +177,14 @@ const LiveModelsSection = () => {
   };
 
   const handleWatchModel = (modelId) => {
-    // Always navigate to the timed stream viewer
+    // Check if user is authenticated before allowing stream access
+    if (!user) {
+      // Redirect to login page if not authenticated
+      navigate('/login');
+      return;
+    }
+    
+    // Navigate to the timed stream viewer
     navigate(`/live-streaming/viewer/${modelId}`);
   };
 
