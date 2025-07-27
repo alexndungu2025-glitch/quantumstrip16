@@ -37,6 +37,26 @@ const TimedStreamViewer = () => {
     hasRemoteStream
   } = useWebRTCViewer();
 
+  // Connection retry logic
+  const [retryCount, setRetryCount] = useState(0);
+  const [maxRetries] = useState(3);
+  const [showConnectionError, setShowConnectionError] = useState(false);
+
+  // Retry connection if it fails
+  useEffect(() => {
+    if (error && !isConnected && retryCount < maxRetries && modelId) {
+      const retryTimeout = setTimeout(() => {
+        console.log(`Retrying connection attempt ${retryCount + 1}/${maxRetries}`);
+        setRetryCount(prev => prev + 1);
+        connectToStream(modelId);
+      }, 2000 * (retryCount + 1)); // Exponential backoff
+
+      return () => clearTimeout(retryTimeout);
+    } else if (error && retryCount >= maxRetries) {
+      setShowConnectionError(true);
+    }
+  }, [error, isConnected, retryCount, maxRetries, modelId, connectToStream]);
+
   // Synchronize remote video element with stream changes
   useEffect(() => {
     if (remoteVideoRef.current && hasRemoteStream) {
