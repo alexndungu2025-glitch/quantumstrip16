@@ -45,10 +45,12 @@ export const useWebRTCStreaming = () => {
   const [streamQuality, setStreamQuality] = useState('medium');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [thumbnailUrl, setThumbnailUrl] = useState(null);
   
   const localVideoRef = useRef(null);
   const peerConnections = useRef(new Map());
   const streamSessionId = useRef(null);
+  const thumbnailCanvas = useRef(null);
 
   // Initialize camera and microphone
   const startLocalStream = useCallback(async (quality = 'medium') => {
