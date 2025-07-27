@@ -343,7 +343,9 @@ class StreamingFocusedTester:
         # Test WebRTC signaling with invalid session (should return 404)
         signal_data = {
             "session_id": "invalid-session-id",
-            "signal": {"type": "offer", "sdp": "test-sdp"}
+            "signal_type": "offer",
+            "signal_data": {"type": "offer", "sdp": "test-sdp"},
+            "target_user_id": "test-user-id"
         }
         
         try:
@@ -352,7 +354,7 @@ class StreamingFocusedTester:
             self.assert_test(
                 response.status_code == 404,
                 f"WebRTC signaling properly validates session: {response.status_code}",
-                f"WebRTC signaling validation failed: {response.status_code}"
+                f"WebRTC signaling validation failed: {response.status_code} - Expected 404 for invalid session"
             )
                 
         except Exception as e:
