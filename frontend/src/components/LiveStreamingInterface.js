@@ -147,7 +147,7 @@ export const ModelLiveStreamingInterface = () => {
             )}
 
             {/* Viewer Count */}
-            {isStreaming && (
+            {isStreaming && !isMobile && (
               <div className="absolute top-4 right-4 bg-black bg-opacity-60 rounded-lg p-3">
                 <div className="flex items-center text-white">
                   <svg className="w-5 h-5 mr-2" fill="currentColor">
@@ -159,15 +159,15 @@ export const ModelLiveStreamingInterface = () => {
             )}
 
             {/* Stream Controls */}
-            <div className="absolute bottom-4 left-4 right-4">
-              <div className="bg-black bg-opacity-60 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
+            <div className={`absolute ${isMobile ? 'bottom-2 left-2 right-2' : 'bottom-4 left-4 right-4'}`}>
+              <div className={`bg-black bg-opacity-60 rounded-lg ${isMobile ? 'p-3' : 'p-4'}`}>
+                <div className={`flex items-center ${isMobile ? 'flex-col space-y-3' : 'justify-between'}`}>
+                  <div className={`flex items-center ${isMobile ? 'justify-center w-full space-x-2' : 'space-x-4'}`}>
                     {/* Go Live / End Stream Button */}
                     <button
                       onClick={isStreaming ? handleStopStreaming : handleStartStreaming}
                       disabled={isLoading}
-                      className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                      className={`${isMobile ? 'px-4 py-2 text-sm' : 'px-6 py-3'} rounded-lg font-semibold transition-colors ${
                         isStreaming 
                           ? 'bg-red-600 hover:bg-red-700 text-white' 
                           : 'bg-green-600 hover:bg-green-700 text-white'
@@ -180,13 +180,13 @@ export const ModelLiveStreamingInterface = () => {
                     <div className="relative">
                       <button
                         onClick={() => setShowQualityMenu(!showQualityMenu)}
-                        className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm"
+                        className={`${isMobile ? 'px-3 py-2' : 'px-4 py-2'} bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm`}
                       >
                         {qualityLabels[streamQuality]}
                       </button>
                       
                       {showQualityMenu && (
-                        <div className="absolute bottom-full mb-2 left-0 bg-gray-800 rounded-lg shadow-lg border border-gray-700 min-w-48">
+                        <div className={`absolute ${isMobile ? 'bottom-full mb-2 right-0' : 'bottom-full mb-2 left-0'} bg-gray-800 rounded-lg shadow-lg border border-gray-700 min-w-48 z-10`}>
                           {availableQualities.map((quality) => (
                             <button
                               key={quality}
@@ -206,16 +206,26 @@ export const ModelLiveStreamingInterface = () => {
                         </div>
                       )}
                     </div>
+                    
+                    {/* Mobile Viewer Count */}
+                    {isMobile && isStreaming && (
+                      <div className="flex items-center text-white text-sm">
+                        <svg className="w-4 h-4 mr-1" fill="currentColor">
+                          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                        {viewers.length}
+                      </div>
+                    )}
                   </div>
                   
                   {/* Earnings Display */}
-                  <div className="flex items-center space-x-4 text-white">
+                  <div className={`flex items-center ${isMobile ? 'justify-center w-full' : 'space-x-4'} text-white`}>
                     {isStreaming && (
-                      <div className="flex items-center bg-green-600 bg-opacity-20 px-3 py-2 rounded-lg">
-                        <svg className="w-5 h-5 mr-2 text-green-400" fill="currentColor">
+                      <div className={`flex items-center bg-green-600 bg-opacity-20 ${isMobile ? 'px-2 py-1' : 'px-3 py-2'} rounded-lg`}>
+                        <svg className={`${isMobile ? 'w-4 h-4 mr-1' : 'w-5 h-5 mr-2'} text-green-400`} fill="currentColor">
                           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                         </svg>
-                        <span className="text-green-400 font-semibold">
+                        <span className={`text-green-400 font-semibold ${isMobile ? 'text-sm' : ''}`}>
                           +{Math.floor(earnings)} tokens earned
                         </span>
                       </div>
