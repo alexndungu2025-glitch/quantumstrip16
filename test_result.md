@@ -108,8 +108,11 @@
   admin panel, and streaming infrastructure. Backend now has complete API endpoints for all features.
   
   CURRENT CONTINUATION ISSUES TO FIX:
-  1. Camera access issue: "user must be a model to start streaming" even when logged in as a model
-  2. Application is not responsive on screens (mobile/tablet compatibility)
+  1. Camera opens for just 1 second then gets 404 error when model goes live
+  2. When model logs in, unlogged frontend + viewers should show +1 model online
+  3. Thumbnail/image should capture still image of live session and show at frontend
+  4. When going live with working camera, should show +1 model live
+  5. Add test camera feature before model goes live to test device camera
   
 ## backend:
   - task: "Phase 1: User Authentication System"
