@@ -145,6 +145,17 @@ export const ModelLiveStreamingInterface = () => {
                   muted
                   playsInline
                   className="w-full h-full object-cover"
+                  onLoadedMetadata={() => {
+                    console.log('Video metadata loaded, attempting to play');
+                    if (localVideoRef.current) {
+                      localVideoRef.current.play().catch(err => {
+                        console.error('Failed to play video:', err);
+                      });
+                    }
+                  }}
+                  onError={(e) => {
+                    console.error('Video error:', e);
+                  }}
                 />
               ) : (
                 <div className="text-center px-4">
