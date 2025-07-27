@@ -73,6 +73,10 @@ export const useWebRTCStreaming = () => {
       // Display local video
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
+        // Ensure video plays
+        localVideoRef.current.play().catch(err => {
+          console.warn('Could not auto-play video:', err);
+        });
       }
       
       return stream;
