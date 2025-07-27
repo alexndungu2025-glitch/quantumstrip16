@@ -106,7 +106,9 @@ const AppRoutes = () => {
       } />
       
       <Route path="/live-streaming/viewer/:modelId" element={
-        <TimedStreamViewer />
+        <ProtectedRoute>
+          <TimedStreamViewer />
+        </ProtectedRoute>
       } />
       
       {/* Catch all route */}
