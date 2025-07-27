@@ -157,6 +157,32 @@ export const useWebRTCViewer = () => {
     }
   }, [initializePeerConnection, sendSignalingMessage]);
 
+  // Handle received signaling messages
+  const handleSignalingMessage = useCallback(async (message) => {
+    if (!peerConnection.current) return;
+    
+    try {
+      switch (message.type) {
+        case 'answer':
+          await peerConnection.current.setRemoteDescription(
+            new RTCSessionDescription(message.answer)
+          );
+          break;
+          
+        case 'ice-candidate':
+          await peerConnection.current.addIceCandidate(
+            new RTCIceCandidate(message.candidate)
+          );
+          break;
+          
+        default:
+          console.log('Unknown signaling message type:', message.type);
+      }
+    } catch (err) {
+      console.error('Error handling signaling message:', err);
+    }
+  }, []);
+
   // Start polling for signaling messages
   const startSignalingPolling = useCallback(() => {
     let pollAttempts = 0;
@@ -214,32 +240,6 @@ export const useWebRTCViewer = () => {
     // Cleanup function
     return () => clearInterval(pollInterval);
   }, [isConnected, handleSignalingMessage]);
-
-  // Handle received signaling messages
-  const handleSignalingMessage = useCallback(async (message) => {
-    if (!peerConnection.current) return;
-    
-    try {
-      switch (message.type) {
-        case 'answer':
-          await peerConnection.current.setRemoteDescription(
-            new RTCSessionDescription(message.answer)
-          );
-          break;
-          
-        case 'ice-candidate':
-          await peerConnection.current.addIceCandidate(
-            new RTCIceCandidate(message.candidate)
-          );
-          break;
-          
-        default:
-          console.log('Unknown signaling message type:', message.type);
-      }
-    } catch (err) {
-      console.error('Error handling signaling message:', err);
-    }
-  }, []);
 
   // Restart connection (for ICE restart)
   const restartConnection = useCallback(async () => {
