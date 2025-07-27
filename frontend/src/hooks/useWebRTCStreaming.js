@@ -145,19 +145,50 @@ export const useWebRTCStreaming = () => {
     setViewers(prev => prev.filter(v => v.id !== viewerId));
   }, []);
 
-  // Send signaling message (in production, this would use WebSocket)
-  const sendSignalingMessage = useCallback(async (targetUserId, message) => {
-    if (!streamSessionId.current) return;
+  // Capture thumbnail from video stream
+  const captureThumbnail = useCallback(() => {
+    if (!localVideoRef.current || !localStream) return null;
     
     try {
-      await streamingAPI.sendWebRTCSignal({
-        session_id: streamSessionId.current,
-        signal_type: message.type,
-        signal_data: message,
-        target_user_id: targetUserId
-      });
+      // Create canvas element if not exists
+      if (!thumbnailCanvas.current) {
+        thumbnailCanvas.current = document.createElement('canvas');
+      }
+      
+      const canvas = thumbnailCanvas.current;
+      const video = localVideoRef.current;
+      const context = canvas.getContext('2d');
+      
+      // Set canvas size to match video
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      
+      // Draw video frame to canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Convert to base64
+      const thumbnailDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      setThumbnailUrl(thumbnailDataUrl);
+      
+      return thumbnailDataUrl;
     } catch (err) {
-      console.error('Error sending signaling message:', err);
+      console.error('Error capturing thumbnail:', err);
+      return null;
+    }
+  }, [localStream]);
+
+  // Upload thumbnail to backend
+  const uploadThumbnail = useCallback(async (thumbnailData) => {
+    if (!thumbnailData) return;
+    
+    try {
+      const dashboardData = await authAPI.getModelDashboard();
+      const modelProfileId = dashboardData.profile.id;
+      
+      await streamingAPI.updateModelThumbnail(modelProfileId, thumbnailData);
+      console.log('Thumbnail uploaded successfully');
+    } catch (err) {
+      console.error('Error uploading thumbnail:', err);
     }
   }, []);
 
