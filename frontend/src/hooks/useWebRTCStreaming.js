@@ -192,6 +192,22 @@ export const useWebRTCStreaming = () => {
     }
   }, []);
 
+  // Send signaling message (in production, this would use WebSocket)
+  const sendSignalingMessage = useCallback(async (targetUserId, message) => {
+    if (!streamSessionId.current) return;
+    
+    try {
+      await streamingAPI.sendWebRTCSignal({
+        session_id: streamSessionId.current,
+        signal_type: message.type,
+        signal_data: message,
+        target_user_id: targetUserId
+      });
+    } catch (err) {
+      console.error('Error sending signaling message:', err);
+    }
+  }, []);
+
   // Handle viewer connection request
   const handleViewerConnection = useCallback(async (viewerId, offer) => {
     try {
