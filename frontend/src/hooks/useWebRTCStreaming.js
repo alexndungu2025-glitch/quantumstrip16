@@ -226,7 +226,7 @@ export const useWebRTCStreaming = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [startLocalStream, stopLocalStream]);
+  }, [startLocalStream, stopLocalStream, authAPI]);
 
   // Stop streaming session
   const stopStreaming = useCallback(async () => {
