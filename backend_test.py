@@ -613,6 +613,9 @@ class QuantumStripTester:
         # WebRTC Live Streaming Tests (New Implementation)
         self.test_webrtc_live_streaming()
         
+        # Streaming System Improvements Tests (Thumbnail System)
+        self.test_streaming_system_improvements()
+        
         # Print final results
         self.print_final_results()
 
