@@ -183,7 +183,8 @@ class StreamingFocusedTester:
         
         # Test creating streaming session
         session_data = {
-            "model_id": self.model_id
+            "model_id": self.model_id,
+            "session_type": "public"
         }
         
         try:
