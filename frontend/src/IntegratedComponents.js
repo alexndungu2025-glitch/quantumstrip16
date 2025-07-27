@@ -616,6 +616,7 @@ export const IntegratedStreamingInterface = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('girls');
+  const [pollInterval, setPollInterval] = useState(30000); // Start with 30 seconds
   
   // Load live models from backend
   useEffect(() => {
@@ -623,7 +624,20 @@ export const IntegratedStreamingInterface = () => {
       try {
         setIsLoading(true);
         const response = await streamingAPI.getLiveModels();
-        setLiveModels(response.models || []);
+        const newModels = response.models || [];
+        const newModelsCount = newModels.length;
+        const previousCount = liveModels.length;
+        
+        setLiveModels(newModels);
+        
+        // If new models came online, increase polling frequency for 5 minutes
+        if (newModelsCount > previousCount) {
+          setPollInterval(5000); // Poll every 5 seconds
+          setTimeout(() => {
+            setPollInterval(30000); // Return to 30 seconds after 5 minutes
+          }, 300000);
+        }
+        
       } catch (err) {
         console.error('Error loading live models:', err);
         setError('Failed to load live models');
@@ -634,10 +648,10 @@ export const IntegratedStreamingInterface = () => {
 
     loadLiveModels();
     
-    // Refresh every 30 seconds
-    const interval = setInterval(loadLiveModels, 30000);
+    // Use variable poll interval
+    const interval = setInterval(loadLiveModels, pollInterval);
     return () => clearInterval(interval);
-  }, []);
+  }, [pollInterval]);
 
   // Function to open model chat
   const openModelChat = (modelId, modelName) => {
