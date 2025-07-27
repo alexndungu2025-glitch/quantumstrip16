@@ -282,6 +282,53 @@
       - working: "NA"
         agent: "main"
         comment: "🚧 RESPONSIVENESS ISSUES IDENTIFIED: The streaming interfaces and key components are not responsive for mobile/tablet devices. Issues found: ModelLiveStreamingInterface has fixed w-80 side panel, non-responsive layout using flex h-screen without mobile adaptations, ViewerLiveStreamInterface has similar issues, components don't use responsive utilities properly."
+  - task: "Fix Camera 404 Error Issue"
+    implemented: false
+    working: "NA"
+    file: "hooks/useWebRTCStreaming.js, components/LiveStreamingInterface.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "🚧 TASK IDENTIFIED: Fix camera opening for 1 second then 404 error. Backend tests show all APIs working correctly, so issue is likely in frontend WebRTC implementation or API call handling."
+
+  - task: "Implement Thumbnail Capture for Live Streams"
+    implemented: false
+    working: "NA"
+    file: "hooks/useWebRTCStreaming.js, components/LiveModelsSection.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "🚧 TASK IDENTIFIED: Implement canvas-based thumbnail capture from video stream. Should capture still image when model goes live and display in LiveModelsSection instead of mock preview."
+
+  - task: "Real-time Model Count Updates"
+    implemented: false
+    working: "NA"
+    file: "components/LiveModelsSection.js, IntegratedComponents.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "🚧 TASK IDENTIFIED: Implement real-time model count updates. Currently polls every 30 seconds, need immediate updates when model logs in/goes live to show +1 model online."
+
+  - task: "Test Camera Modal Component"
+    implemented: false
+    working: "NA"
+    file: "components/CameraTestModal.js, components/LiveStreamingInterface.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "🚧 TASK IDENTIFIED: Create camera test modal component that allows models to test camera access, video quality, and device selection before going live."
       - working: "NA"
         agent: "main"
         comment: "✅ RESPONSIVE DESIGN IMPLEMENTED: Updated both ModelLiveStreamingInterface and ViewerLiveStreamInterface for mobile/tablet compatibility. Changes: Added useResponsive hook imports, implemented mobile-first responsive layouts with flex-col on mobile, added collapsible side panel with mobile toggle button, responsive video container sizing, mobile-optimized controls and buttons, responsive overlay positioning, mobile-friendly quality selectors, responsive text sizes and spacing, touch-friendly button sizes. Side panel: w-80 on desktop, w-64 on tablet, full-screen overlay on mobile with close button. All streaming interfaces now adapt properly to different screen sizes."
