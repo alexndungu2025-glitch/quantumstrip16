@@ -201,12 +201,16 @@ export const useWebRTCStreaming = () => {
         throw new Error('User must be a model to start streaming');
       }
       
+      // Get model dashboard data to get the correct model profile ID
+      const dashboardData = await authAPI.getModelDashboard();
+      const modelProfileId = dashboardData.profile.id;
+      
       // Update model status to live
       await streamingAPI.updateModelStatus(true, true);
       
-      // Create streaming session with user's model ID
+      // Create streaming session with correct model profile ID
       const sessionResponse = await streamingAPI.createStreamingSession({
-        model_id: userProfile.id, // Use the actual user ID as model ID
+        model_id: modelProfileId, // Use the model profile ID, not user ID
         session_type: 'public'
       });
       
