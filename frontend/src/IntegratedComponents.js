@@ -624,11 +624,15 @@ export const IntegratedStreamingInterface = () => {
     const loadLiveModelsAndCounts = async () => {
       try {
         setIsLoading(true);
+        console.log('🔄 IntegratedComponents: Loading live models and counts...');
+        
         // Load both live models and model counts in parallel
         const [modelsResponse, countsResponse] = await Promise.all([
           streamingAPI.getLiveModels(),
           streamingAPI.getOnlineModelsCount()
         ]);
+        
+        console.log('📊 IntegratedComponents: API Response - Models:', modelsResponse, 'Counts:', countsResponse);
         
         const newModels = modelsResponse || []; // Backend returns array directly
         const newCounts = countsResponse || { online_models: 0, live_models: 0 };
@@ -638,6 +642,8 @@ export const IntegratedStreamingInterface = () => {
         
         setLiveModels(newModels);
         setModelCounts(newCounts);
+        
+        console.log(`📈 IntegratedComponents: Model counts - Previous: ${previousCount}, New: ${newModelsCount}`);
         
         // If new models came online, increase polling frequency briefly
         if (newModelsCount > previousCount) {
@@ -654,7 +660,7 @@ export const IntegratedStreamingInterface = () => {
         }
         
       } catch (err) {
-        console.error('Error loading live models and counts:', err);
+        console.error('❌ IntegratedComponents: Error loading live models and counts:', err);
         setError('Failed to load live models and counts');
       } finally {
         setIsLoading(false);
