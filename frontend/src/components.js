@@ -250,8 +250,16 @@ export const LoginPage = () => {
     const result = await login(formData.email, formData.password);
     
     if (result.success) {
-      // Redirect to dashboard - the router will handle the redirect based on user role
-      navigate('/dashboard');
+      // Check if there's a redirect URL in localStorage
+      const redirectUrl = localStorage.getItem('quantumstrip_redirect_after_login');
+      
+      if (redirectUrl) {
+        localStorage.removeItem('quantumstrip_redirect_after_login');
+        navigate(redirectUrl);
+      } else {
+        // Redirect to dashboard - the router will handle the redirect based on user role
+        navigate('/dashboard');
+      }
     }
     // Error is handled by the auth context and displayed below
   };
