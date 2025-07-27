@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { streamingAPI } from '../api';
+import { streamingAPI, authAPI } from '../api';
 
 // WebRTC configuration with STUN servers
 const rtcConfiguration = {
