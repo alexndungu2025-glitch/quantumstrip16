@@ -196,7 +196,7 @@ export const useWebRTCStreaming = () => {
       setStreamQuality(quality);
       
       // Get current user's model profile to get model ID
-      const userProfile = JSON.parse(localStorage.getItem('user'));
+      const userProfile = JSON.parse(localStorage.getItem('quantumstrip_user'));
       if (!userProfile || userProfile.role !== 'model') {
         throw new Error('User must be a model to start streaming');
       }
