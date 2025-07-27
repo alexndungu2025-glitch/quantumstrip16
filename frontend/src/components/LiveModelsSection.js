@@ -91,6 +91,7 @@ const LiveModelCard = ({ model, onWatch }) => {
 
 const LiveModelsSection = () => {
   const [liveModels, setLiveModels] = useState([]);
+  const [modelCounts, setModelCounts] = useState({ online_models: 0, live_models: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pollInterval, setPollInterval] = useState(30000); // Start with 30 seconds
@@ -98,21 +99,27 @@ const LiveModelsSection = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchLiveModels();
+    fetchLiveModelsAndCounts();
     
     // Use variable poll interval
-    const interval = setInterval(fetchLiveModels, pollInterval);
+    const interval = setInterval(fetchLiveModelsAndCounts, pollInterval);
     return () => clearInterval(interval);
   }, [pollInterval]);
 
-  const fetchLiveModels = async () => {
+  const fetchLiveModelsAndCounts = async () => {
     try {
       setError(null);
-      const models = await streamingAPI.getLiveModels();
+      // Load both live models and model counts
+      const [models, counts] = await Promise.all([
+        streamingAPI.getLiveModels(),
+        streamingAPI.getOnlineModelsCount()
+      ]);
+      
       const newModelsCount = models?.length || 0;
       const previousCount = liveModels.length;
       
       setLiveModels(models || []);
+      setModelCounts(counts || { online_models: 0, live_models: 0 });
       
       // If new models came online, increase polling frequency for 5 minutes
       if (newModelsCount > previousCount) {
