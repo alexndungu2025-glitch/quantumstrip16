@@ -159,6 +159,11 @@ export const streamingAPI = {
     const response = await api.get('/streaming/models/live');
     return response.data;
   },
+
+  getOnlineModelsCount: async () => {
+    const response = await api.get('/streaming/models/online');
+    return response.data;
+  },
   
   updateModelStatus: async (isLive, isAvailable) => {
     const response = await api.patch('/streaming/models/status', null, {
