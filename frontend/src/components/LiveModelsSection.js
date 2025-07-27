@@ -5,19 +5,24 @@ import { useAuth } from '../AuthContext';
 
 const LiveModelCard = ({ model, onWatch }) => {
   const { user } = useAuth();
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="bg-gray-800 rounded-lg overflow-hidden group cursor-pointer transition-transform hover:scale-105 border border-gray-700">
+    <div 
+      className="bg-gray-800 rounded-lg overflow-hidden group cursor-pointer transition-transform hover:scale-105 border border-gray-700"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Model Preview */}
       <div className="relative aspect-video bg-gradient-to-br from-purple-900 to-pink-900">
         {/* Live Indicator */}
-        <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center">
+        <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center z-10">
           <div className="w-2 h-2 bg-white rounded-full mr-1 animate-pulse"></div>
           LIVE
         </div>
         
         {/* Viewer Count */}
-        <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs flex items-center">
+        <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs flex items-center z-10">
           <svg className="w-3 h-3 mr-1" fill="currentColor">
             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
           </svg>
@@ -30,11 +35,11 @@ const LiveModelCard = ({ model, onWatch }) => {
             <img 
               src={model.thumbnail} 
               alt="Live stream preview" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform group-hover:scale-110"
             />
           ) : (
             <div className="text-center">
-              <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mb-2 animate-pulse">
+              <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mb-2 animate-pulse group-hover:scale-110 transition-transform">
                 <svg className="w-10 h-10 text-white" fill="currentColor">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
@@ -45,12 +50,14 @@ const LiveModelCard = ({ model, onWatch }) => {
 
         {/* Overlay on Hover */}
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
-          <button 
-            onClick={() => onWatch(model.model_id)}
-            className="opacity-0 group-hover:opacity-100 bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform scale-90 group-hover:scale-100"
-          >
-            Watch Live
-          </button>
+          <div className={`transition-all duration-300 ${isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
+            <button 
+              onClick={() => onWatch(model.model_id)}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 transform shadow-lg"
+            >
+              🎥 Watch Live
+            </button>
+          </div>
         </div>
       </div>
 
@@ -68,7 +75,10 @@ const LiveModelCard = ({ model, onWatch }) => {
         
         <div className="flex items-center justify-between text-sm text-gray-400 mb-3">
           <span>Private: {model.show_rate} tokens/min</span>
-          <span className="text-green-400">● Online</span>
+          <span className="text-red-400 flex items-center">
+            <div className="w-2 h-2 bg-red-500 rounded-full mr-1 animate-pulse"></div>
+            Streaming
+          </span>
         </div>
         
         <div className="flex space-x-2">
