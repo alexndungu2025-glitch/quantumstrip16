@@ -51,6 +51,7 @@ class ModelStreamingStatus(BaseModel):
     current_viewers: int
     show_rate: int
     last_online: Optional[datetime] = None
+    thumbnail: Optional[str] = None
 
 class WebRTCSignalRequest(BaseModel):
     session_id: str
