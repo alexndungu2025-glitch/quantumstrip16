@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { useResponsive } from '../responsive';
 import useWebRTCViewer from '../hooks/useWebRTCViewer';
-import { tokenAPI } from '../api';
+import { tokenAPI, tipAPI } from '../api';
 
 const TimedStreamViewer = () => {
   const navigate = useNavigate();
