@@ -617,7 +617,7 @@ export const IntegratedStreamingInterface = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('girls');
-  const [pollInterval, setPollInterval] = useState(5000); // Start with 5 seconds for immediate updates
+  const [pollInterval, setPollInterval] = useState(15000); // Start with 15 seconds for regular updates
   
   // Load live models and counts from backend
   useEffect(() => {
