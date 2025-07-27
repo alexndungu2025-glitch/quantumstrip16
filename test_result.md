@@ -313,8 +313,8 @@
         comment: "✅ CAMERA 404 ERROR FIXED: Root cause was incorrect REACT_APP_BACKEND_URL in frontend/.env file. Updated from old URL 'https://9fc8a8ba-0800-4a9d-8330-145a33670acc.preview.emergentagent.com' to current URL 'https://3da060f4-280f-4196-81b0-c52f9ab3fbdb.preview.emergentagent.com'. This was causing 403 Forbidden errors when creating streaming sessions. Backend testing confirmed all streaming endpoints work perfectly (132 tests passed). Frontend services restarted to load new URL configuration."
 
   - task: "Implement Thumbnail Capture for Live Streams"
-    implemented: false
-    working: "NA"
+    implemented: true
+    working: true
     file: "hooks/useWebRTCStreaming.js, components/LiveModelsSection.js"
     stuck_count: 0
     priority: "high"
@@ -323,6 +323,9 @@
       - working: "NA"
         agent: "main"
         comment: "🚧 TASK IDENTIFIED: Implement canvas-based thumbnail capture from video stream. Should capture still image when model goes live and display in LiveModelsSection instead of mock preview."
+      - working: true
+        agent: "main"
+        comment: "✅ THUMBNAIL CAPTURE IMPLEMENTED: Already exists in useWebRTCStreaming.js with captureThumbnail() function that creates canvas element, captures video frame, converts to base64, and uploads via streamingAPI.updateModelThumbnail(). LiveModelsSection.js displays thumbnails from model.thumbnail field with fallback to animated preview icon. Backend PATCH /api/streaming/models/{model_id}/thumbnail endpoint confirmed working in tests."
 
   - task: "Real-time Model Count Updates"
     implemented: false
