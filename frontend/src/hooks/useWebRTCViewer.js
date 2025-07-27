@@ -34,6 +34,10 @@ export const useWebRTCViewer = () => {
       
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = stream;
+        // Ensure video plays
+        remoteVideoRef.current.play().catch(err => {
+          console.warn('Could not auto-play remote video:', err);
+        });
       }
     };
 
