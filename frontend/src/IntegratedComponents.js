@@ -751,11 +751,19 @@ export const IntegratedStreamingInterface = () => {
               QUANTUMSTRIP
             </h1>
             <div className="hidden md:block">
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-green-400 text-sm font-semibold">
-                  {liveModels.length} models online
-                </span>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="text-blue-400 text-sm font-semibold">
+                    {modelCounts.online_models} model{modelCounts.online_models !== 1 ? 's' : ''} online
+                  </span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-green-400 text-sm font-semibold">
+                    {modelCounts.live_models} model{modelCounts.live_models !== 1 ? 's' : ''} live
+                  </span>
+                </div>
               </div>
             </div>
           </div>
