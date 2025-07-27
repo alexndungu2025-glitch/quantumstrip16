@@ -368,6 +368,7 @@ export const useWebRTCStreaming = () => {
     streamQuality,
     error,
     isLoading,
+    thumbnailUrl,
     
     // Refs
     localVideoRef,
@@ -377,6 +378,7 @@ export const useWebRTCStreaming = () => {
     stopStreaming,
     changeStreamQuality,
     handleViewerConnection,
+    captureThumbnail,
     
     // Utils
     availableQualities: Object.keys(VIDEO_QUALITY_PRESETS),
