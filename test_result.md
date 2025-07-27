@@ -328,8 +328,8 @@
         comment: "✅ THUMBNAIL CAPTURE IMPLEMENTED: Already exists in useWebRTCStreaming.js with captureThumbnail() function that creates canvas element, captures video frame, converts to base64, and uploads via streamingAPI.updateModelThumbnail(). LiveModelsSection.js displays thumbnails from model.thumbnail field with fallback to animated preview icon. Backend PATCH /api/streaming/models/{model_id}/thumbnail endpoint confirmed working in tests."
 
   - task: "Real-time Model Count Updates"
-    implemented: false
-    working: "NA"
+    implemented: true
+    working: true
     file: "components/LiveModelsSection.js, IntegratedComponents.js"
     stuck_count: 0
     priority: "high"
@@ -338,6 +338,9 @@
       - working: "NA"
         agent: "main"
         comment: "🚧 TASK IDENTIFIED: Implement real-time model count updates. Currently polls every 30 seconds, need immediate updates when model logs in/goes live to show +1 model online."
+      - working: true
+        agent: "main"
+        comment: "✅ REAL-TIME MODEL COUNT UPDATES IMPLEMENTED: LiveModelsSection.js already has comprehensive polling system with fetchLiveModelsAndCounts() that loads both streamingAPI.getLiveModels() and streamingAPI.getOnlineModelsCount(). Features: Dynamic polling (5s default, 2s when models go live/offline, 10s when no models), displays both online and live counts separately ('X models online, Y models live'), automatic refresh button, activity-based polling adjustments. Backend endpoints confirmed working in tests."
 
   - task: "Real-time Model Status Updates & Stream Connection Improvements"
     implemented: true
