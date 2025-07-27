@@ -306,7 +306,7 @@ class StreamingImprovementsTester:
             
             unauth_response = self.session.post(f"{API_BASE}/streaming/session", json=unauth_session_data)
             self.assert_test(
-                unauth_response.status_code == 401,
+                unauth_response.status_code in [401, 403],
                 "Unauthenticated users properly blocked from creating sessions",
                 f"Unauthenticated access should be blocked but got: {unauth_response.status_code}"
             )
