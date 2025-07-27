@@ -2241,7 +2241,7 @@ class QuantumStripTester:
                 viewer_headers = {"Authorization": f"Bearer {self.tokens['test_viewer']}"}
                 tip_data = {
                     "model_id": model_id,
-                    "amount": 10,
+                    "tokens": 10,  # Changed from "amount" to "tokens"
                     "message": "Test tip for unlimited viewing"
                 }
                 
@@ -2249,7 +2249,7 @@ class QuantumStripTester:
                 self.assert_test(
                     tip_response.status_code in [200, 400],  # 400 might be insufficient balance
                     f"✅ Tipping system endpoint accessible: {tip_response.status_code}",
-                    f"❌ Tipping system failed: {tip_response.status_code}"
+                    f"❌ Tipping system failed: {tip_response.status_code} - {tip_response.text}"
                 )
                 
                 if tip_response.status_code == 200:
