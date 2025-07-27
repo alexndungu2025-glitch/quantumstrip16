@@ -417,22 +417,22 @@ export const ViewerLiveStreamInterface = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="text-center">
+                <div className="text-center px-4">
                   {isConnecting ? (
                     <div>
-                      <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                      <p className="text-white text-xl">Connecting to stream...</p>
-                      <p className="text-gray-400">Please wait</p>
+                      <div className={`${isMobile ? 'w-12 h-12' : 'w-16 h-16'} border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4`}></div>
+                      <p className={`text-white ${isMobile ? 'text-lg' : 'text-xl'}`}>Connecting to stream...</p>
+                      <p className={`text-gray-400 ${isMobile ? 'text-sm' : ''}`}>Please wait</p>
                     </div>
                   ) : (
                     <div>
-                      <div className="w-32 h-32 bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                        <svg className="w-16 h-16 text-gray-400" fill="currentColor">
+                      <div className={`${isMobile ? 'w-20 h-20' : 'w-32 h-32'} bg-gray-700 rounded-full flex items-center justify-center mb-4 mx-auto`}>
+                        <svg className={`${isMobile ? 'w-10 h-10' : 'w-16 h-16'} text-gray-400`} fill="currentColor">
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 13.5v-7l6 3.5-6 3.5z"/>
                         </svg>
                       </div>
-                      <p className="text-white text-xl">Stream Unavailable</p>
-                      <p className="text-gray-400">Model is not currently live</p>
+                      <p className={`text-white ${isMobile ? 'text-lg' : 'text-xl'}`}>Stream Unavailable</p>
+                      <p className={`text-gray-400 ${isMobile ? 'text-sm' : ''}`}>Model is not currently live</p>
                     </div>
                   )}
                 </div>
@@ -441,17 +441,17 @@ export const ViewerLiveStreamInterface = () => {
 
             {/* Connection Status */}
             {isConnected && (
-              <div className="absolute top-4 left-4 bg-black bg-opacity-60 rounded-lg p-3">
+              <div className={`absolute top-4 left-4 bg-black bg-opacity-60 rounded-lg ${isMobile ? 'p-2' : 'p-3'}`}>
                 <div className="flex items-center text-white">
                   <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                  <span className="text-green-400 font-semibold">LIVE</span>
-                  <span className="ml-3 text-sm">{selectedQuality} quality</span>
+                  <span className={`text-green-400 font-semibold ${isMobile ? 'text-sm' : ''}`}>LIVE</span>
+                  <span className={`ml-3 text-sm ${isMobile ? 'hidden' : ''}`}>{selectedQuality} quality</span>
                 </div>
               </div>
             )}
 
             {/* Quality Selector */}
-            {isConnected && (
+            {isConnected && !isMobile && (
               <div className="absolute top-4 right-4">
                 <select
                   value={selectedQuality}
@@ -467,14 +467,50 @@ export const ViewerLiveStreamInterface = () => {
               </div>
             )}
 
+            {/* Mobile Quality Selector */}
+            {isConnected && isMobile && (
+              <div className="absolute top-4 right-4">
+                <button
+                  onClick={() => setShowQualityMenu(!showQualityMenu)}
+                  className="bg-black bg-opacity-60 text-white rounded-lg p-2 text-sm border border-gray-600"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
+                
+                {showQualityMenu && (
+                  <div className="absolute top-full mt-2 right-0 bg-gray-800 rounded-lg shadow-lg border border-gray-700 min-w-48 z-10">
+                    {Object.entries(VIDEO_QUALITY_PRESETS).map(([key, preset]) => (
+                      <button
+                        key={key}
+                        onClick={() => handleQualityChange(key)}
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg ${
+                          key === selectedQuality ? 'text-green-400 bg-gray-700' : 'text-white'
+                        }`}
+                      >
+                        {preset.label}
+                        {key === selectedQuality && (
+                          <svg className="inline w-4 h-4 ml-2" fill="currentColor">
+                            <path d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"/>
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Controls */}
-            <div className="absolute bottom-4 left-4 right-4">
-              <div className="bg-black bg-opacity-60 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
+            <div className={`absolute ${isMobile ? 'bottom-2 left-2 right-2' : 'bottom-4 left-4 right-4'}`}>
+              <div className={`bg-black bg-opacity-60 rounded-lg ${isMobile ? 'p-3' : 'p-4'}`}>
+                <div className={`flex items-center ${isMobile ? 'justify-center' : 'justify-between'}`}>
+                  <div className={`flex items-center ${isMobile ? 'space-x-2' : 'space-x-4'}`}>
                     <button
                       onClick={handleDisconnect}
-                      className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                      className={`bg-red-600 hover:bg-red-700 text-white ${isMobile ? 'px-4 py-2 text-sm' : 'px-6 py-2'} rounded-lg font-semibold transition-colors`}
                     >
                       Leave Stream
                     </button>
