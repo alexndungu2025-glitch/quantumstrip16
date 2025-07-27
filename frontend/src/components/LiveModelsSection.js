@@ -121,12 +121,18 @@ const LiveModelsSection = () => {
       setLiveModels(models || []);
       setModelCounts(counts || { online_models: 0, live_models: 0 });
       
-      // If new models came online, increase polling frequency for 5 minutes
+      // If new models came online, increase polling frequency briefly
       if (newModelsCount > previousCount) {
-        setPollInterval(5000); // Poll every 5 seconds
+        setPollInterval(2000); // Poll every 2 seconds when new models come online
         setTimeout(() => {
-          setPollInterval(30000); // Return to 30 seconds after 5 minutes
-        }, 300000);
+          setPollInterval(5000); // Return to 5 seconds after 2 minutes
+        }, 120000);
+      } else if (newModelsCount < previousCount) {
+        // If models went offline, also increase polling briefly  
+        setPollInterval(2000);
+        setTimeout(() => {
+          setPollInterval(5000);
+        }, 120000);
       }
       
     } catch (err) {
