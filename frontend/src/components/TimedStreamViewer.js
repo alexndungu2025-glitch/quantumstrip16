@@ -150,8 +150,8 @@ const TimedStreamViewer = () => {
     }
     
     try {
-      // Send tip to model (you'll need to implement this API call)
-      // await tipAPI.sendTip(modelId, tipAmount);
+      // Send tip to model
+      await tipAPI.sendTip(modelId, tipAmount);
       
       // Set active tip and reset timers
       setHasActiveTip(true);
@@ -160,6 +160,9 @@ const TimedStreamViewer = () => {
       setTimeRemaining(Infinity);
       setMaxViewingTime(Infinity);
       setShowTipModal(false);
+      
+      // Update token balance
+      setUserTokens(prev => prev - tipAmount);
       
       // Reconnect to stream
       connectToStream(modelId);
