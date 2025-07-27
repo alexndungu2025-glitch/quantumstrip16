@@ -100,15 +100,19 @@ export const useWebRTCViewer = () => {
   const connectToStream = useCallback(async (modelIdParam) => {
     setIsLoading(true);
     setError(null);
+    setConnectionState('connecting');
     modelId.current = modelIdParam;
     
     try {
+      console.log(`Connecting to stream for model: ${modelIdParam}`);
+      
       // Create streaming session with the model
       const sessionResponse = await streamingAPI.createStreamingSession({
         model_id: modelIdParam,
         session_type: 'public'
       });
       
+      console.log('Streaming session created:', sessionResponse.session_id);
       streamSessionId.current = sessionResponse.session_id;
       
       // Initialize peer connection
@@ -121,6 +125,7 @@ export const useWebRTCViewer = () => {
       });
       
       await pc.setLocalDescription(offer);
+      console.log('Local description set, sending offer');
       
       // Send offer to model
       await sendSignalingMessage(modelIdParam, {
@@ -133,7 +138,21 @@ export const useWebRTCViewer = () => {
       
     } catch (err) {
       console.error('Error connecting to stream:', err);
-      setError('Failed to connect to stream. Please try again.');
+      let errorMessage = 'Failed to connect to stream. Please try again.';
+      
+      // Provide more specific error messages
+      if (err.response) {
+        if (err.response.status === 404) {
+          errorMessage = 'Model not found or not currently streaming.';
+        } else if (err.response.status === 400) {
+          errorMessage = 'Model is currently unavailable for streaming.';
+        } else if (err.response.status === 403) {
+          errorMessage = 'Access denied. Please check your permissions.';
+        }
+      }
+      
+      setError(errorMessage);
+      setConnectionState('failed');
       setIsLoading(false);
     }
   }, [initializePeerConnection, sendSignalingMessage]);
