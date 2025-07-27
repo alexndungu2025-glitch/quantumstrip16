@@ -343,6 +343,7 @@ export const ModelLiveStreamingInterface = () => {
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
