@@ -94,10 +94,24 @@ export const ModelLiveStreamingInterface = () => {
         onLogout={logout}
       />
       
-      <div className="flex h-screen pt-16">
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} h-screen pt-16`}>
         {/* Main Video Area */}
         <div className="flex-1 flex flex-col">
-          <div className="flex-1 bg-gray-900 relative">
+          <div className={`flex-1 bg-gray-900 relative ${isMobile ? 'min-h-[60vh]' : ''}`}>
+            {/* Mobile Menu Toggle */}
+            {isMobile && (
+              <div className="absolute top-4 right-4 z-20">
+                <button
+                  onClick={() => setShowSidePanel(!showSidePanel)}
+                  className="bg-black bg-opacity-60 hover:bg-opacity-80 text-white p-3 rounded-lg transition-all"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            
             {/* Video Display */}
             <div className="w-full h-full flex items-center justify-center">
               {localStream ? (
@@ -109,25 +123,25 @@ export const ModelLiveStreamingInterface = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="text-center">
-                  <div className="w-32 h-32 bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                    <svg className="w-16 h-16 text-gray-400" fill="currentColor">
+                <div className="text-center px-4">
+                  <div className={`${isMobile ? 'w-20 h-20' : 'w-32 h-32'} bg-gray-700 rounded-full flex items-center justify-center mb-4 mx-auto`}>
+                    <svg className={`${isMobile ? 'w-10 h-10' : 'w-16 h-16'} text-gray-400`} fill="currentColor">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 13.5v-7l6 3.5-6 3.5z"/>
                     </svg>
                   </div>
-                  <p className="text-white text-xl">Camera Offline</p>
-                  <p className="text-gray-400">Click "Go Live" to start streaming</p>
+                  <p className={`text-white ${isMobile ? 'text-lg' : 'text-xl'}`}>Camera Offline</p>
+                  <p className={`text-gray-400 ${isMobile ? 'text-sm' : ''}`}>Click "Go Live" to start streaming</p>
                 </div>
               )}
             </div>
 
             {/* Stream Status Overlay */}
             {isStreaming && (
-              <div className="absolute top-4 left-4 bg-black bg-opacity-60 rounded-lg p-3">
+              <div className={`absolute ${isMobile ? 'top-4 left-4' : 'top-4 left-4'} bg-black bg-opacity-60 rounded-lg ${isMobile ? 'p-2' : 'p-3'}`}>
                 <div className="flex items-center text-white">
                   <div className="w-3 h-3 bg-red-500 rounded-full mr-2 animate-pulse"></div>
-                  <span className="text-red-400 font-semibold">LIVE</span>
-                  <span className="ml-3">{formatDuration(sessionDuration)}</span>
+                  <span className={`text-red-400 font-semibold ${isMobile ? 'text-sm' : ''}`}>LIVE</span>
+                  <span className={`ml-3 ${isMobile ? 'text-sm' : ''}`}>{formatDuration(sessionDuration)}</span>
                 </div>
               </div>
             )}
