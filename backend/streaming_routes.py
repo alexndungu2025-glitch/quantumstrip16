@@ -524,7 +524,8 @@ async def get_live_models():
                 is_available=model["is_available"],
                 current_viewers=viewer_count,
                 show_rate=model.get("show_rate", PRIVATE_SHOW_RATE),
-                last_online=model.get("last_online")
+                last_online=model.get("last_online"),
+                thumbnail=model.get("thumbnail")
             ))
         
         return result
