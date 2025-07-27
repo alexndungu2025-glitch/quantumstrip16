@@ -147,25 +147,25 @@ const LiveModelsSection = () => {
       setLiveModels(models || []);
       setModelCounts(counts || { online_models: 0, live_models: 0 });
       
-      // Dynamic polling based on activity
+      // Dynamic polling based on activity - using 15 seconds as base rate
       if (newlyLive.length > 0) {
         console.log(`${newlyLive.length} new model(s) went live`);
-        setPollInterval(2000); // Poll every 2 seconds when new models come online
+        setPollInterval(10000); // Poll every 10 seconds when new models come online
         setTimeout(() => {
-          setPollInterval(5000); // Return to 5 seconds after 2 minutes
+          setPollInterval(15000); // Return to 15 seconds after 2 minutes
         }, 120000);
       } else if (wentOffline.length > 0) {
         console.log(`${wentOffline.length} model(s) went offline`);
-        setPollInterval(2000);
+        setPollInterval(10000);
         setTimeout(() => {
-          setPollInterval(5000);
+          setPollInterval(15000);
         }, 120000);
       } else if (newModelsCount === 0 && previousCount > 0) {
         // All models went offline, reduce polling
-        setPollInterval(10000); // 10 seconds when no models are live
+        setPollInterval(30000); // 30 seconds when no models are live
       } else if (newModelsCount > 0 && previousCount === 0) {
         // First model came online, increase polling
-        setPollInterval(3000); // 3 seconds when first model comes online
+        setPollInterval(12000); // 12 seconds when first model comes online
       }
       
     } catch (err) {
