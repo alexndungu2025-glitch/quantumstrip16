@@ -16,6 +16,8 @@ export const ModelLiveStreamingInterface = () => {
   const [showSidePanel, setShowSidePanel] = useState(!isMobile); // Hide side panel on mobile by default
   const [earnings, setEarnings] = useState(0);
   const [sessionDuration, setSessionDuration] = useState(0);
+  const [showCameraTest, setShowCameraTest] = useState(false);
+  const [cameraTestResults, setCameraTestResults] = useState(null);
 
   const {
     isStreaming,
