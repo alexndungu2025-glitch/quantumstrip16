@@ -64,6 +64,15 @@ export const ModelLiveStreamingInterface = () => {
     }
   };
 
+  const handleCameraTest = () => {
+    setShowCameraTest(true);
+  };
+
+  const handleCameraTestComplete = (results) => {
+    setCameraTestResults(results);
+    setShowCameraTest(false);
+  };
+
   const handleStopStreaming = async () => {
     try {
       await stopStreaming();
