@@ -427,7 +427,6 @@ export const ViewerLiveStreamInterface = () => {
   useEffect(() => {
     // Check authentication before attempting to connect
     if (!user) {
-      setError('Please log in to watch live streams');
       navigate('/login');
       return;
     }
@@ -441,7 +440,7 @@ export const ViewerLiveStreamInterface = () => {
         disconnectFromStream();
       }
     };
-  }, [modelId, user, navigate]);
+  }, [modelId, user, navigate, connectToStream, disconnectFromStream, isConnected]);
 
   const handleQualityChange = (quality) => {
     setSelectedQuality(quality);
