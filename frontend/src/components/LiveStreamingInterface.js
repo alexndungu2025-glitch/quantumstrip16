@@ -387,6 +387,7 @@ export const ViewerLiveStreamInterface = () => {
   const handleQualityChange = (quality) => {
     setSelectedQuality(quality);
     requestQualityChange(quality);
+    setShowQualityMenu(false);
   };
 
   const handleDisconnect = () => {
@@ -402,10 +403,10 @@ export const ViewerLiveStreamInterface = () => {
         onLogout={logout}
       />
       
-      <div className="flex h-screen pt-16">
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} h-screen pt-16`}>
         {/* Main Video Area */}
         <div className="flex-1 flex flex-col">
-          <div className="flex-1 bg-gray-900 relative">
+          <div className={`flex-1 bg-gray-900 relative ${isMobile ? 'min-h-[70vh]' : ''}`}>
             {/* Video Display */}
             <div className="w-full h-full flex items-center justify-center">
               {hasRemoteStream ? (
