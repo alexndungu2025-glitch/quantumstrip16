@@ -94,7 +94,7 @@ const LiveModelsSection = () => {
   const [modelCounts, setModelCounts] = useState({ online_models: 0, live_models: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [pollInterval, setPollInterval] = useState(30000); // Start with 30 seconds
+  const [pollInterval, setPollInterval] = useState(5000); // Start with 5 seconds for immediate updates
   const navigate = useNavigate();
   const { user } = useAuth();
 
