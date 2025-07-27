@@ -648,17 +648,17 @@ export const IntegratedStreamingInterface = () => {
         }
         
       } catch (err) {
-        console.error('Error loading live models:', err);
-        setError('Failed to load live models');
+        console.error('Error loading live models and counts:', err);
+        setError('Failed to load live models and counts');
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadLiveModels();
+    loadLiveModelsAndCounts();
     
     // Use variable poll interval
-    const interval = setInterval(loadLiveModels, pollInterval);
+    const interval = setInterval(loadLiveModelsAndCounts, pollInterval);
     return () => clearInterval(interval);
   }, [pollInterval]);
 
