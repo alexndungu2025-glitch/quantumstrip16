@@ -222,6 +222,9 @@
       - working: "NA"
         agent: "main"
         comment: "✅ REAL WEBRTC STREAMING IMPLEMENTED: Complete WebRTC-based live streaming system with audio + video support. Features: Model streaming with getUserMedia camera access, multiple quality options (480p, 720p, 1080p), peer-to-peer connections, viewer connection management, live models display, quality selection for viewers, proper signaling infrastructure, session management, model status updates. Created ModelLiveStreamingInterface for models, ViewerLiveStreamInterface for viewers, LiveModelsSection showing live models, WebRTC hooks for both streaming and viewing. Routes added: /live-streaming/model, /live-streaming/viewer/:modelId. Backend API updated with proper signaling support. Ready for testing with real camera streaming functionality."
+      - working: "NA"
+        agent: "main"
+        comment: "🔧 CAMERA ACCESS FIX IMPLEMENTED: Fixed localStorage key mismatch in useWebRTCStreaming.js. Changed from localStorage.getItem('user') to localStorage.getItem('quantumstrip_user') to match authentication system. This resolves the 'User must be a model to start streaming' error when models try to go live."
 
 ## frontend:
   - task: "Comprehensive streaming platform UI with WebRTC Live Streaming"
