@@ -425,6 +425,13 @@ export const ViewerLiveStreamInterface = () => {
   } = useWebRTCViewer();
 
   useEffect(() => {
+    // Check authentication before attempting to connect
+    if (!user) {
+      setError('Please log in to watch live streams');
+      navigate('/login');
+      return;
+    }
+    
     if (modelId) {
       connectToStream(modelId);
     }
@@ -434,7 +441,7 @@ export const ViewerLiveStreamInterface = () => {
         disconnectFromStream();
       }
     };
-  }, [modelId]);
+  }, [modelId, user, navigate]);
 
   const handleQualityChange = (quality) => {
     setSelectedQuality(quality);
