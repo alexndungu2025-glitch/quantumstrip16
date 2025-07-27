@@ -15,8 +15,8 @@ import {
 import {
   RegisterPage,
   TokenPurchasePage,
-  IntegratedStreamingInterface as StreamingInterface,
 } from './IntegratedComponents';
+import { ProfessionalStreamingInterface } from './components/ProfessionalStreamingInterface';
 import { ModelLiveStreamingInterface } from './components/LiveStreamingInterface';
 import TimedStreamViewer from './components/TimedStreamViewer';
 
