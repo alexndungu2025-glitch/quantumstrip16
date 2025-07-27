@@ -354,7 +354,9 @@ export const ViewerLiveStreamInterface = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { modelId } = useParams();
+  const { isMobile, isTablet } = useResponsive();
   const [selectedQuality, setSelectedQuality] = useState('auto');
+  const [showQualityMenu, setShowQualityMenu] = useState(false);
 
   const {
     isConnected,
