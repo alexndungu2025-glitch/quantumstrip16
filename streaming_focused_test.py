@@ -116,7 +116,7 @@ class StreamingFocusedTester:
         
         try:
             # Test model dashboard access
-            response = self.session.get(f"{API_BASE}/models/dashboard", headers=headers)
+            response = self.session.get(f"{API_BASE}/auth/model/dashboard", headers=headers)
             self.assert_test(
                 response.status_code == 200,
                 f"Model dashboard accessible: {response.status_code}",
