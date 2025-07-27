@@ -159,16 +159,22 @@ export const useWebRTCViewer = () => {
 
   // Start polling for signaling messages
   const startSignalingPolling = useCallback(() => {
+    let pollAttempts = 0;
+    const maxPollAttempts = 30; // 30 seconds max
+    
     const pollInterval = setInterval(async () => {
       if (!streamSessionId.current || !peerConnection.current) {
         clearInterval(pollInterval);
         return;
       }
       
+      pollAttempts++;
+      
       try {
         const response = await streamingAPI.getWebRTCSignals(streamSessionId.current);
         
         if (response.signals && response.signals.length > 0) {
+          console.log(`Processing ${response.signals.length} signaling messages`);
           for (const signal of response.signals) {
             await handleSignalingMessage(signal.signal_data);
           }
@@ -176,24 +182,38 @@ export const useWebRTCViewer = () => {
         
         // Stop polling if connected
         if (isConnected) {
+          console.log('Connection established, stopping signaling poll');
           setIsLoading(false);
           clearInterval(pollInterval);
         }
         
+        // Also stop if we've been polling too long
+        if (pollAttempts >= maxPollAttempts) {
+          console.log('Signaling poll timeout');
+          clearInterval(pollInterval);
+          if (!isConnected) {
+            setIsLoading(false);
+            setError('Connection timeout. Model may not be streaming.');
+            setConnectionState('failed');
+          }
+        }
+        
       } catch (err) {
         console.error('Error polling signaling messages:', err);
+        
+        // Don't immediately fail on signaling errors, give it a few tries
+        if (pollAttempts >= 5) {
+          clearInterval(pollInterval);
+          setIsLoading(false);
+          setError('Connection failed. Please try again.');
+          setConnectionState('failed');
+        }
       }
     }, 1000); // Poll every second
 
-    // Cleanup after 30 seconds if not connected
-    setTimeout(() => {
-      if (!isConnected) {
-        clearInterval(pollInterval);
-        setIsLoading(false);
-        setError('Connection timeout. Please try again.');
-      }
-    }, 30000);
-  }, [isConnected]);
+    // Cleanup function
+    return () => clearInterval(pollInterval);
+  }, [isConnected, handleSignalingMessage]);
 
   // Handle received signaling messages
   const handleSignalingMessage = useCallback(async (message) => {
