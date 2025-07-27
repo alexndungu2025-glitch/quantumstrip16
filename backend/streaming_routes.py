@@ -665,11 +665,14 @@ async def get_webrtc_signals(
             detail="Failed to get WebRTC signals"
         )
 
+class ThumbnailUpdateRequest(BaseModel):
+    thumbnail: str = Field(..., description="Base64 encoded thumbnail image")
+
 # Model Thumbnail Routes
 @router.patch("/models/{model_id}/thumbnail")
 async def update_model_thumbnail(
     model_id: str,
-    thumbnail: str,
+    request: ThumbnailUpdateRequest,
     current_user: User = Depends(get_current_user)
 ):
     """Update model's thumbnail image"""
@@ -701,7 +704,7 @@ async def update_model_thumbnail(
             {"_id": model_id},
             {
                 "$set": {
-                    "thumbnail": thumbnail,
+                    "thumbnail": request.thumbnail,
                     "updated_at": datetime.utcnow()
                 }
             }
