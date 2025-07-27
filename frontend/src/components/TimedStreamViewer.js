@@ -360,12 +360,39 @@ const TimedStreamViewer = () => {
                   console.error('Remote video error:', e);
                 }}
               />
+            ) : showConnectionError ? (
+              <div className="text-center">
+                <div className="w-32 h-32 bg-red-700 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <svg className="w-16 h-16 text-red-300" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 13.5v-7l6 3.5-6 3.5z"/>
+                  </svg>
+                </div>
+                <p className="text-white text-xl">Connection Failed</p>
+                <p className="text-gray-400 mb-4">Unable to connect to model's stream</p>
+                <button
+                  onClick={() => {
+                    setRetryCount(0);
+                    setShowConnectionError(false);
+                    connectToStream(modelId);
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
+                >
+                  Try Again
+                </button>
+              </div>
             ) : (
               <div className="text-center">
-                {isLoading ? (
+                {isLoading || (connectionState !== 'new' && connectionState !== 'connected') ? (
                   <div>
                     <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-white text-xl">Connecting...</p>
+                    <p className="text-white text-xl">
+                      {retryCount > 0 ? `Reconnecting... (${retryCount}/${maxRetries})` : 'Connecting...'}
+                    </p>
+                    <p className="text-gray-400">
+                      {connectionState === 'connecting' && 'Establishing connection...'}
+                      {connectionState === 'failed' && 'Connection failed, retrying...'}
+                      {connectionState === 'disconnected' && 'Reconnecting...'}
+                    </p>
                   </div>
                 ) : (
                   <div>
@@ -374,8 +401,8 @@ const TimedStreamViewer = () => {
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 13.5v-7l6 3.5-6 3.5z"/>
                       </svg>
                     </div>
-                    <p className="text-white text-xl">Stream Unavailable</p>
-                    <p className="text-gray-400">Model is not currently live</p>
+                    <p className="text-white text-xl">Stream Starting...</p>
+                    <p className="text-gray-400">Waiting for model to begin streaming</p>
                   </div>
                 )}
               </div>
