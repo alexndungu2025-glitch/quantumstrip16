@@ -107,6 +107,10 @@
   PHASE 2 IMPLEMENTATION COMPLETE: Full token economy with M-Pesa integration, model earnings system, 
   admin panel, and streaming infrastructure. Backend now has complete API endpoints for all features.
   
+  CURRENT CONTINUATION ISSUES TO FIX:
+  1. Camera access issue: "user must be a model to start streaming" even when logged in as a model
+  2. Application is not responsive on screens (mobile/tablet compatibility)
+  
 ## backend:
   - task: "Phase 1: User Authentication System"
     implemented: true
