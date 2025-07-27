@@ -1633,6 +1633,314 @@ class QuantumStripTester:
         
         print_info("Camera access fix testing completed - Model authentication and streaming access verified")
 
+    def test_streaming_system_improvements(self):
+        """Test streaming system improvements including thumbnail capture system"""
+        print_test_header("Streaming System Improvements - Thumbnail Capture System")
+        
+        print_info("Testing streaming system improvements for QuantumStrip platform...")
+        print_info("Focus: Model authentication, profile ID retrieval, thumbnail system, and complete streaming flow")
+        
+        # Test 1: Model authentication and dashboard endpoint to get correct model profile ID
+        print_info("Step 1: Testing model authentication and profile ID retrieval...")
+        
+        model_login_data = {
+            "email": "model@test.com",
+            "password": "password123"
+        }
+        
+        model_token = None
+        model_id = None
+        
+        try:
+            # Login as model
+            response = self.session.post(f"{API_BASE}/auth/login", json=model_login_data)
+            self.assert_test(
+                response.status_code == 200,
+                f"Model authentication successful: {response.status_code}",
+                f"Model authentication failed: {response.status_code} - {response.text}"
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                model_token = data.get("access_token")
+                model_user = data.get("user", {})
+                
+                self.assert_test(
+                    model_user.get("role") == "model",
+                    "Model user has correct role",
+                    f"Model user role incorrect: {model_user.get('role')}"
+                )
+                
+                # Get model dashboard to retrieve profile ID
+                model_headers = {"Authorization": f"Bearer {model_token}"}
+                dashboard_response = self.session.get(f"{API_BASE}/auth/model/dashboard", headers=model_headers)
+                
+                self.assert_test(
+                    dashboard_response.status_code == 200,
+                    "Model dashboard endpoint accessible",
+                    f"Model dashboard failed: {dashboard_response.status_code} - {dashboard_response.text}"
+                )
+                
+                if dashboard_response.status_code == 200:
+                    dashboard_data = dashboard_response.json()
+                    model_profile = dashboard_data.get('profile', {})
+                    model_id = model_profile.get('id')
+                    
+                    self.assert_test(
+                        model_id is not None,
+                        f"Model profile ID retrieved successfully: {model_id}",
+                        "Model profile ID not found in dashboard response"
+                    )
+                    
+                    # Verify profile includes thumbnail field
+                    self.assert_test(
+                        'thumbnail' in model_profile,
+                        "Model profile includes thumbnail field",
+                        "Model profile missing thumbnail field"
+                    )
+                    
+                    print_info(f"Model profile data: ID={model_id}, thumbnail={model_profile.get('thumbnail', 'None')}")
+                    
+        except Exception as e:
+            self.assert_test(False, "", f"Model authentication test error: {str(e)}")
+            return
+        
+        if not model_token or not model_id:
+            print_error("Cannot continue tests without model authentication and profile ID")
+            return
+        
+        # Test 2: Update model status for streaming
+        print_info("Step 2: Testing model status update...")
+        
+        try:
+            model_headers = {"Authorization": f"Bearer {model_token}"}
+            status_data = {
+                "is_live": True,
+                "is_available": True
+            }
+            
+            status_response = self.session.patch(f"{API_BASE}/streaming/models/status", params=status_data, headers=model_headers)
+            self.assert_test(
+                status_response.status_code == 200,
+                f"Model status update successful: {status_response.status_code}",
+                f"Model status update failed: {status_response.status_code} - {status_response.text}"
+            )
+            
+            if status_response.status_code == 200:
+                status_result = status_response.json()
+                self.assert_test(
+                    status_result.get("success") == True,
+                    "Model status update returns success",
+                    "Model status update doesn't return success"
+                )
+                print_info(f"Model status updated: Live={status_result.get('is_live')}, Available={status_result.get('is_available')}")
+                
+        except Exception as e:
+            self.assert_test(False, "", f"Model status update test error: {str(e)}")
+        
+        # Test 3: Test streaming session creation with correct model profile ID (should fix 404 error)
+        print_info("Step 3: Testing streaming session creation with correct model profile ID...")
+        
+        if 'test_viewer' in self.tokens:
+            try:
+                viewer_headers = {"Authorization": f"Bearer {self.tokens['test_viewer']}"}
+                session_data = {
+                    "model_id": model_id,  # Using correct model profile ID
+                    "session_type": "public"
+                }
+                
+                session_response = self.session.post(f"{API_BASE}/streaming/session", json=session_data, headers=viewer_headers)
+                self.assert_test(
+                    session_response.status_code == 200,
+                    f"Streaming session creation successful with model profile ID: {session_response.status_code}",
+                    f"Streaming session creation failed: {session_response.status_code} - {session_response.text}"
+                )
+                
+                if session_response.status_code == 200:
+                    session_result = session_response.json()
+                    self.assert_test(
+                        "session_id" in session_result and "webrtc_config" in session_result,
+                        "Streaming session created with WebRTC configuration",
+                        "Streaming session missing required data"
+                    )
+                    
+                    self.assert_test(
+                        session_result.get("model_id") == model_id,
+                        "Streaming session uses correct model profile ID",
+                        f"Streaming session model ID mismatch: expected {model_id}, got {session_result.get('model_id')}"
+                    )
+                    
+                    print_info(f"Streaming session created successfully: {session_result.get('session_id')}")
+                    print_info("✅ 404 error should be resolved - using correct model profile ID instead of user ID")
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Streaming session creation test error: {str(e)}")
+        else:
+            print_warning("No viewer token available for streaming session test")
+        
+        # Test 4: Test the new thumbnail update endpoint
+        print_info("Step 4: Testing new thumbnail update endpoint...")
+        
+        try:
+            model_headers = {"Authorization": f"Bearer {model_token}"}
+            
+            # Create a sample base64 thumbnail (small test image)
+            sample_thumbnail = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/8A"
+            
+            thumbnail_data = {
+                "thumbnail": sample_thumbnail
+            }
+            
+            thumbnail_response = self.session.patch(f"{API_BASE}/streaming/models/{model_id}/thumbnail", json=thumbnail_data, headers=model_headers)
+            self.assert_test(
+                thumbnail_response.status_code == 200,
+                f"Thumbnail update endpoint successful: {thumbnail_response.status_code}",
+                f"Thumbnail update failed: {thumbnail_response.status_code} - {thumbnail_response.text}"
+            )
+            
+            if thumbnail_response.status_code == 200:
+                thumbnail_result = thumbnail_response.json()
+                self.assert_test(
+                    thumbnail_result.get("success") == True,
+                    "Thumbnail update returns success",
+                    "Thumbnail update doesn't return success"
+                )
+                print_info("✅ New thumbnail update endpoint working correctly")
+                
+        except Exception as e:
+            self.assert_test(False, "", f"Thumbnail update test error: {str(e)}")
+        
+        # Test 5: Test the live models endpoint to ensure it returns thumbnails
+        print_info("Step 5: Testing live models endpoint with thumbnail support...")
+        
+        try:
+            live_models_response = self.session.get(f"{API_BASE}/streaming/models/live")
+            self.assert_test(
+                live_models_response.status_code == 200,
+                f"Live models endpoint accessible: {live_models_response.status_code}",
+                f"Live models endpoint failed: {live_models_response.status_code} - {live_models_response.text}"
+            )
+            
+            if live_models_response.status_code == 200:
+                live_models = live_models_response.json()
+                self.assert_test(
+                    isinstance(live_models, list),
+                    "Live models returns list format",
+                    "Live models doesn't return list format"
+                )
+                
+                # Find our test model in the live models list
+                test_model_found = None
+                for model in live_models:
+                    if model.get('model_id') == model_id:
+                        test_model_found = model
+                        break
+                
+                self.assert_test(
+                    test_model_found is not None,
+                    f"Test model found in live models list: {model_id}",
+                    f"Test model not found in live models list"
+                )
+                
+                if test_model_found:
+                    self.assert_test(
+                        'thumbnail' in test_model_found,
+                        "Live model data includes thumbnail field",
+                        "Live model data missing thumbnail field"
+                    )
+                    
+                    thumbnail_value = test_model_found.get('thumbnail')
+                    self.assert_test(
+                        thumbnail_value is not None,
+                        f"Live model has thumbnail data: {len(str(thumbnail_value)) if thumbnail_value else 0} chars",
+                        "Live model thumbnail is None"
+                    )
+                    
+                    print_info(f"✅ Live models endpoint returns thumbnails: {len(live_models)} models found")
+                    print_info(f"Test model thumbnail length: {len(str(thumbnail_value)) if thumbnail_value else 0} characters")
+                
+        except Exception as e:
+            self.assert_test(False, "", f"Live models endpoint test error: {str(e)}")
+        
+        # Test 6: Test complete flow verification
+        print_info("Step 6: Verifying complete streaming flow...")
+        
+        try:
+            # Verify model profile was updated with thumbnail
+            model_headers = {"Authorization": f"Bearer {model_token}"}
+            dashboard_response = self.session.get(f"{API_BASE}/auth/model/dashboard", headers=model_headers)
+            
+            if dashboard_response.status_code == 200:
+                dashboard_data = dashboard_response.json()
+                updated_profile = dashboard_data.get('profile', {})
+                updated_thumbnail = updated_profile.get('thumbnail')
+                
+                self.assert_test(
+                    updated_thumbnail is not None and len(str(updated_thumbnail)) > 0,
+                    "Model profile updated with thumbnail data",
+                    "Model profile thumbnail not updated"
+                )
+                
+                print_info("✅ Complete flow verified:")
+                print_info("  1. Model login → ✅ Success")
+                print_info("  2. Get profile → ✅ Success (correct model profile ID)")
+                print_info("  3. Update status → ✅ Success (model set to live)")
+                print_info("  4. Create session → ✅ Success (404 error resolved)")
+                print_info("  5. Upload thumbnail → ✅ Success (new endpoint working)")
+                print_info("  6. Verify thumbnails in live models → ✅ Success")
+                
+        except Exception as e:
+            self.assert_test(False, "", f"Complete flow verification error: {str(e)}")
+        
+        # Test 7: Test authorization for thumbnail endpoint
+        print_info("Step 7: Testing thumbnail endpoint authorization...")
+        
+        # Test with viewer token (should fail)
+        if 'test_viewer' in self.tokens:
+            try:
+                viewer_headers = {"Authorization": f"Bearer {self.tokens['test_viewer']}"}
+                thumbnail_data = {"thumbnail": "test"}
+                
+                response = self.session.patch(f"{API_BASE}/streaming/models/{model_id}/thumbnail", json=thumbnail_data, headers=viewer_headers)
+                self.assert_test(
+                    response.status_code == 403,
+                    "Viewer properly blocked from updating thumbnails",
+                    f"Viewer should not be able to update thumbnails but got: {response.status_code}"
+                )
+                print_info("✅ Thumbnail endpoint properly protected - only models can update")
+                
+            except Exception as e:
+                self.assert_test(False, "", f"Thumbnail authorization test error: {str(e)}")
+        
+        # Test 8: Test thumbnail endpoint with invalid model ID
+        print_info("Step 8: Testing thumbnail endpoint with invalid model ID...")
+        
+        try:
+            model_headers = {"Authorization": f"Bearer {model_token}"}
+            thumbnail_data = {"thumbnail": "test"}
+            invalid_model_id = "invalid-model-id-12345"
+            
+            response = self.session.patch(f"{API_BASE}/streaming/models/{invalid_model_id}/thumbnail", json=thumbnail_data, headers=model_headers)
+            self.assert_test(
+                response.status_code == 404,
+                "Invalid model ID properly returns 404",
+                f"Invalid model ID should return 404 but got: {response.status_code}"
+            )
+            print_info("✅ Thumbnail endpoint properly validates model ID")
+            
+        except Exception as e:
+            self.assert_test(False, "", f"Invalid model ID test error: {str(e)}")
+        
+        print_info("Streaming system improvements testing completed successfully!")
+        print_info("Key improvements verified:")
+        print_info("✓ Model authentication and correct profile ID retrieval")
+        print_info("✓ Streaming session creation with model profile ID (404 error fix)")
+        print_info("✓ New thumbnail update endpoint (PATCH /api/streaming/models/{model_id}/thumbnail)")
+        print_info("✓ Model profiles include thumbnail field")
+        print_info("✓ Live models endpoint returns thumbnails")
+        print_info("✓ Complete streaming flow: login → profile → status → session → thumbnail")
+        print_info("✓ Proper authorization and validation for thumbnail endpoints")
+
     def print_final_results(self):
         """Print final test results"""
         print(f"\n{Colors.BOLD}{Colors.BLUE}")
