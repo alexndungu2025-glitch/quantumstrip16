@@ -179,7 +179,7 @@ const LiveModelsSection = () => {
           <h3 className="text-white text-lg font-semibold mb-2">Failed to Load Live Models</h3>
           <p className="text-gray-400 mb-4">{error}</p>
           <button 
-            onClick={fetchLiveModels}
+            onClick={fetchLiveModelsAndCounts}
             className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
           >
             Try Again
