@@ -250,44 +250,68 @@ export const ModelLiveStreamingInterface = () => {
         </div>
 
         {/* Side Panel */}
-        <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col">
-          <div className="p-4 border-b border-gray-700">
-            <h3 className="text-white font-semibold">Stream Dashboard</h3>
-          </div>
+        {showSidePanel && (
+          <div className={`${
+            isMobile 
+              ? 'fixed inset-0 z-30 bg-gray-800' 
+              : isTablet 
+                ? 'w-64 bg-gray-800 border-l border-gray-700 flex flex-col'
+                : 'w-80 bg-gray-800 border-l border-gray-700 flex flex-col'
+          }`}>
+            {/* Mobile close button */}
+            {isMobile && (
+              <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                <h3 className="text-white font-semibold">Stream Dashboard</h3>
+                <button
+                  onClick={() => setShowSidePanel(false)}
+                  className="text-white hover:text-gray-300 p-2"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            
+            {!isMobile && (
+              <div className="p-4 border-b border-gray-700">
+                <h3 className="text-white font-semibold">Stream Dashboard</h3>
+              </div>
+            )}
           
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {/* Stream Stats */}
-            <div className="bg-gray-700 rounded-lg p-4">
-              <h4 className="text-white font-semibold mb-3">Session Stats</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Duration:</span>
-                  <span className="text-white">{formatDuration(sessionDuration)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Viewers:</span>
-                  <span className="text-white">{viewers.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Quality:</span>
-                  <span className="text-white">{qualityLabels[streamQuality]}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Tokens Earned:</span>
-                  <span className="text-green-400">{Math.floor(earnings)}</span>
+            <div className={`flex-1 overflow-y-auto ${isMobile ? 'p-4 pb-20' : 'p-4'} space-y-4`}>
+              {/* Stream Stats */}
+              <div className="bg-gray-700 rounded-lg p-4">
+                <h4 className="text-white font-semibold mb-3">Session Stats</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Duration:</span>
+                    <span className="text-white">{formatDuration(sessionDuration)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Viewers:</span>
+                    <span className="text-white">{viewers.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Quality:</span>
+                    <span className="text-white">{qualityLabels[streamQuality]}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Tokens Earned:</span>
+                    <span className="text-green-400">{Math.floor(earnings)}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Connected Viewers */}
-            <div className="bg-gray-700 rounded-lg p-4">
-              <h4 className="text-white font-semibold mb-3">Connected Viewers</h4>
-              {viewers.length === 0 ? (
-                <p className="text-gray-400 text-sm">No viewers connected</p>
-              ) : (
-                <div className="space-y-2">
-                  {viewers.map((viewer) => (
-                    <div key={viewer.id} className="flex items-center justify-between">
+              {/* Connected Viewers */}
+              <div className="bg-gray-700 rounded-lg p-4">
+                <h4 className="text-white font-semibold mb-3">Connected Viewers</h4>
+                {viewers.length === 0 ? (
+                  <p className="text-gray-400 text-sm">No viewers connected</p>
+                ) : (
+                  <div className="space-y-2">
+                    {viewers.map((viewer) => (
+                      <div key={viewer.id} className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                         <span className="text-white text-sm">Viewer {viewer.id.slice(-6)}</span>
