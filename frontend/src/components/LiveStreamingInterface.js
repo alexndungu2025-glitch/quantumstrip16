@@ -34,6 +34,18 @@ export const ModelLiveStreamingInterface = () => {
     qualityLabels
   } = useWebRTCStreaming();
 
+  // Synchronize video element with stream changes
+  useEffect(() => {
+    if (localVideoRef.current && localStream) {
+      localVideoRef.current.srcObject = localStream;
+      localVideoRef.current.play().catch(err => {
+        console.warn('Could not auto-play video:', err);
+      });
+    } else if (localVideoRef.current && !localStream) {
+      localVideoRef.current.srcObject = null;
+    }
+  }, [localStream, localVideoRef]);
+
   // Timer for session duration
   useEffect(() => {
     let interval;
