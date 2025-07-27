@@ -266,6 +266,14 @@ export const useWebRTCStreaming = () => {
       streamSessionId.current = sessionResponse.session_id;
       setIsStreaming(true);
       
+      // Capture thumbnail after a short delay to ensure video is ready
+      setTimeout(() => {
+        const thumbnail = captureThumbnail();
+        if (thumbnail) {
+          uploadThumbnail(thumbnail);
+        }
+      }, 2000);
+      
       console.log('Streaming started with session:', sessionResponse.session_id);
       
     } catch (err) {
