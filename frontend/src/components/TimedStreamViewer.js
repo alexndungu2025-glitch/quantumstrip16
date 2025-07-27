@@ -314,6 +314,17 @@ const TimedStreamViewer = () => {
                 playsInline
                 muted={false}
                 className="w-full h-full object-cover"
+                onLoadedMetadata={() => {
+                  console.log('Remote video metadata loaded');
+                  if (remoteVideoRef.current) {
+                    remoteVideoRef.current.play().catch(err => {
+                      console.error('Failed to play remote video:', err);
+                    });
+                  }
+                }}
+                onError={(e) => {
+                  console.error('Remote video error:', e);
+                }}
               />
             ) : (
               <div className="text-center">
