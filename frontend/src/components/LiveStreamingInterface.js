@@ -515,20 +515,22 @@ export const ViewerLiveStreamInterface = () => {
                       Leave Stream
                     </button>
                     
-                    <div className="text-white text-sm">
-                      Status: <span className={connectionState === 'connected' ? 'text-green-400' : 'text-yellow-400'}>
-                        {connectionState}
-                      </span>
-                    </div>
+                    {!isMobile && (
+                      <div className="text-white text-sm">
+                        Status: <span className={connectionState === 'connected' ? 'text-green-400' : 'text-yellow-400'}>
+                          {connectionState}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   
                   {user?.role === 'viewer' && (
-                    <div className="flex space-x-2">
-                      <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
-                        Tip 10 tokens
+                    <div className={`flex ${isMobile ? 'mt-2 justify-center space-x-1' : 'space-x-2'}`}>
+                      <button className={`bg-green-600 hover:bg-green-700 text-white ${isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-2 text-sm'} rounded-lg`}>
+                        Tip {isMobile ? '10' : '10 tokens'}
                       </button>
-                      <button className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm">
-                        Private Show
+                      <button className={`bg-yellow-600 hover:bg-yellow-700 text-white ${isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-2 text-sm'} rounded-lg`}>
+                        Private{isMobile ? '' : ' Show'}
                       </button>
                     </div>
                   )}
@@ -539,12 +541,12 @@ export const ViewerLiveStreamInterface = () => {
 
           {/* Error Display */}
           {error && (
-            <div className="bg-red-900 border border-red-700 text-red-100 px-4 py-3">
+            <div className={`bg-red-900 border border-red-700 text-red-100 ${isMobile ? 'px-3 py-2 mx-2' : 'px-4 py-3'}`}>
               <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="currentColor">
+                <svg className={`${isMobile ? 'w-4 h-4 mr-1' : 'w-5 h-5 mr-2'}`} fill="currentColor">
                   <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
                 </svg>
-                {error}
+                <span className={isMobile ? 'text-sm' : ''}>{error}</span>
               </div>
             </div>
           )}
