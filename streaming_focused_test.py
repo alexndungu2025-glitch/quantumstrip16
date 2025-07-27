@@ -369,14 +369,14 @@ class StreamingFocusedTester:
         viewer_headers = {"Authorization": f"Bearer {self.tokens['viewer']}"}
         
         # Test viewer trying to update model status (should fail)
-        status_data = {
+        params = {
             "is_live": True,
             "is_available": True
         }
         
         try:
             response = self.session.patch(f"{API_BASE}/streaming/models/status", 
-                                        json=status_data, headers=viewer_headers)
+                                        params=params, headers=viewer_headers)
             self.assert_test(
                 response.status_code in [403, 422],
                 f"Viewer properly blocked from updating model status: {response.status_code}",
