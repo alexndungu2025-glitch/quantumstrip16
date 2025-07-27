@@ -591,6 +591,9 @@ class QuantumStripTester:
         print_info(f"Testing backend at: {API_BASE}")
         print_info(f"Test started at: {datetime.now().isoformat()}")
         
+        # Create test users first
+        self.create_test_users()
+        
         # Run all test suites in order
         self.test_basic_api_health()
         self.test_user_registration()
@@ -618,6 +621,99 @@ class QuantumStripTester:
         
         # Print final results
         self.print_final_results()
+
+    def create_test_users(self):
+        """Create consistent test users for all tests"""
+        print_test_header("Creating Test Users")
+        
+        # Create viewer user
+        viewer_data = {
+            "username": "testviewer",
+            "email": "viewer@test.com",
+            "phone": "254712345678",
+            "password": "password123",
+            "role": "viewer",
+            "age": 25,
+            "country": "ke"
+        }
+        
+        try:
+            response = self.session.post(f"{API_BASE}/auth/register", json=viewer_data)
+            if response.status_code == 200:
+                data = response.json()
+                self.tokens['test_viewer'] = data.get("access_token")
+                print_info("Test viewer user created successfully")
+            elif response.status_code == 400 and "already exists" in response.text:
+                # User exists, try to login
+                login_data = {"email": "viewer@test.com", "password": "password123"}
+                login_response = self.session.post(f"{API_BASE}/auth/login", json=login_data)
+                if login_response.status_code == 200:
+                    self.tokens['test_viewer'] = login_response.json().get("access_token")
+                    print_info("Test viewer user already exists - logged in")
+            else:
+                print_warning(f"Viewer creation response: {response.status_code}")
+        except Exception as e:
+            print_warning(f"Viewer creation error: {str(e)}")
+        
+        # Create model user
+        model_data = {
+            "username": "testmodel",
+            "email": "model@test.com",
+            "phone": "254712345679",
+            "password": "password123",
+            "role": "model",
+            "age": 24,
+            "country": "ke"
+        }
+        
+        try:
+            response = self.session.post(f"{API_BASE}/auth/register", json=model_data)
+            if response.status_code == 200:
+                data = response.json()
+                self.tokens['test_model'] = data.get("access_token")
+                print_info("Test model user created successfully")
+            elif response.status_code == 400 and "already exists" in response.text:
+                # User exists, try to login
+                login_data = {"email": "model@test.com", "password": "password123"}
+                login_response = self.session.post(f"{API_BASE}/auth/login", json=login_data)
+                if login_response.status_code == 200:
+                    self.tokens['test_model'] = login_response.json().get("access_token")
+                    print_info("Test model user already exists - logged in")
+            else:
+                print_warning(f"Model creation response: {response.status_code}")
+        except Exception as e:
+            print_warning(f"Model creation error: {str(e)}")
+        
+        # Create admin user
+        admin_data = {
+            "username": "testadmin",
+            "email": "admin@test.com",
+            "phone": "254712345680",
+            "password": "password123",
+            "role": "admin",
+            "age": 30,
+            "country": "ke"
+        }
+        
+        try:
+            response = self.session.post(f"{API_BASE}/auth/register", json=admin_data)
+            if response.status_code == 200:
+                data = response.json()
+                self.tokens['test_admin'] = data.get("access_token")
+                print_info("Test admin user created successfully")
+            elif response.status_code == 400 and "already exists" in response.text:
+                # User exists, try to login
+                login_data = {"email": "admin@test.com", "password": "password123"}
+                login_response = self.session.post(f"{API_BASE}/auth/login", json=login_data)
+                if login_response.status_code == 200:
+                    self.tokens['test_admin'] = login_response.json().get("access_token")
+                    print_info("Test admin user already exists - logged in")
+            else:
+                print_warning(f"Admin creation response: {response.status_code}")
+        except Exception as e:
+            print_warning(f"Admin creation error: {str(e)}")
+        
+        print_info(f"Test users setup complete. Tokens available: {list(self.tokens.keys())}")
 
     def test_token_system(self):
         """Test complete token system including M-Pesa integration"""
