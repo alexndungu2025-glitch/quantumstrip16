@@ -367,6 +367,13 @@ export const ModelLiveStreamingInterface = () => {
         </div>
         )}
       </div>
+      
+      {/* Camera Test Modal */}
+      <CameraTestModal
+        isOpen={showCameraTest}
+        onClose={() => setShowCameraTest(false)}
+        onTestComplete={handleCameraTestComplete}
+      />
     </div>
   );
 };
