@@ -228,6 +228,43 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Refresh user profile to keep session fresh
+  const refreshProfile = async () => {
+    if (!state.isAuthenticated || !state.token) return;
+    
+    try {
+      const user = await authAPI.getProfile();
+      
+      // Update localStorage with fresh user data
+      localStorage.setItem('quantumstrip_user', JSON.stringify(user));
+      
+      dispatch({ 
+        type: AuthActionTypes.UPDATE_PROFILE_SUCCESS, 
+        payload: user 
+      });
+      
+      return { success: true, user };
+    } catch (error) {
+      // Only logout if it's actually an auth error
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        await logout();
+      }
+      console.warn('Profile refresh failed:', error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Auto-refresh profile every 15 minutes to keep session active
+  useEffect(() => {
+    if (state.isAuthenticated && state.token) {
+      const refreshInterval = setInterval(() => {
+        refreshProfile();
+      }, 15 * 60 * 1000); // 15 minutes
+
+      return () => clearInterval(refreshInterval);
+    }
+  }, [state.isAuthenticated, state.token]);
+
   // Clear error function
   const clearError = () => {
     dispatch({ type: AuthActionTypes.CLEAR_ERROR });
