@@ -53,7 +53,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<StreamingInterface />} />
+      <Route path="/" element={<ProfessionalStreamingInterface />} />
       <Route path="/login" element={
         isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />
       } />
