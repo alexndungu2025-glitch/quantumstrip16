@@ -64,6 +64,16 @@ export const authAPI = {
   logout: async () => {
     localStorage.removeItem('quantumstrip_token');
     localStorage.removeItem('quantumstrip_user');
+  },
+  
+  getModelDashboard: async () => {
+    const response = await api.get('/auth/model/dashboard');
+    return response.data;
+  },
+  
+  getViewerDashboard: async () => {
+    const response = await api.get('/auth/viewer/dashboard');
+    return response.data;
   }
 };
 
