@@ -131,13 +131,7 @@ const LiveModelsSection = () => {
   };
 
   const handleWatchModel = (modelId) => {
-    if (!user) {
-      // Redirect to login for unauthenticated users
-      navigate('/login');
-      return;
-    }
-    
-    // Navigate to live stream viewer
+    // Always navigate to the timed stream viewer
     navigate(`/live-streaming/viewer/${modelId}`);
   };
 
