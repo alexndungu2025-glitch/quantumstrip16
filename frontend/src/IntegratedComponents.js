@@ -613,22 +613,31 @@ export const IntegratedStreamingInterface = () => {
   const { user, logout } = useAuth();
   const { isMobile, isTablet } = useResponsive();
   const [liveModels, setLiveModels] = useState([]);
+  const [modelCounts, setModelCounts] = useState({ online_models: 0, live_models: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('girls');
   const [pollInterval, setPollInterval] = useState(30000); // Start with 30 seconds
   
-  // Load live models from backend
+  // Load live models and counts from backend
   useEffect(() => {
-    const loadLiveModels = async () => {
+    const loadLiveModelsAndCounts = async () => {
       try {
         setIsLoading(true);
-        const response = await streamingAPI.getLiveModels();
-        const newModels = response || []; // Backend returns array directly
+        // Load both live models and model counts in parallel
+        const [modelsResponse, countsResponse] = await Promise.all([
+          streamingAPI.getLiveModels(),
+          streamingAPI.getOnlineModelsCount()
+        ]);
+        
+        const newModels = modelsResponse || []; // Backend returns array directly
+        const newCounts = countsResponse || { online_models: 0, live_models: 0 };
+        
         const newModelsCount = newModels.length;
         const previousCount = liveModels.length;
         
         setLiveModels(newModels);
+        setModelCounts(newCounts);
         
         // If new models came online, increase polling frequency for 5 minutes
         if (newModelsCount > previousCount) {
