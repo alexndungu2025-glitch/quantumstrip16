@@ -24,15 +24,23 @@ const LiveModelCard = ({ model, onWatch }) => {
           {model.current_viewers}
         </div>
 
-        {/* Mock Video Preview */}
+        {/* Thumbnail or Mock Video Preview */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mb-2 animate-pulse">
-              <svg className="w-10 h-10 text-white" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
+          {model.thumbnail ? (
+            <img 
+              src={model.thumbnail} 
+              alt="Live stream preview" 
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="text-center">
+              <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mb-2 animate-pulse">
+                <svg className="w-10 h-10 text-white" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Overlay on Hover */}
