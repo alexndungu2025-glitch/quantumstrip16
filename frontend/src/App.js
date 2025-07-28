@@ -128,7 +128,7 @@ const DashboardRedirect = () => {
       return <Navigate to="/model-dashboard" replace />;
     case 'viewer':
     default:
-      return <Navigate to="/viewer-dashboard" replace />;
+      return <Navigate to="/" replace />;
   }
 };
 
