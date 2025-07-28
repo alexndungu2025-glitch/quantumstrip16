@@ -34,7 +34,8 @@ class StreamingSessionResponse(BaseModel):
     session_type: str
     status: str
     created_at: datetime
-    webrtc_config: Optional[Dict[str, Any]] = None
+    ant_media_config: Optional[Dict[str, Any]] = None
+    stream_id: Optional[str] = None
 
 class PrivateShowResponse(BaseModel):
     show_id: str
