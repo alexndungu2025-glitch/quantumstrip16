@@ -257,8 +257,13 @@ export const LoginPage = () => {
         localStorage.removeItem('quantumstrip_redirect_after_login');
         navigate(redirectUrl);
       } else {
-        // Redirect to dashboard - the router will handle the redirect based on user role
-        navigate('/dashboard');
+        // For viewers, redirect to main landing page with live models
+        // For models and admins, redirect to their dashboards
+        if (result.user.role === 'viewer') {
+          navigate('/');
+        } else {
+          navigate('/dashboard');
+        }
       }
     }
     // Error is handled by the auth context and displayed below
