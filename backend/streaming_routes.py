@@ -239,7 +239,7 @@ async def end_streaming_session(
     session_id: str,
     current_user: User = Depends(get_current_user)
 ):
-    """End a streaming session"""
+    """End a streaming session and clean up Ant Media Server resources"""
     try:
         db = await get_database()
         
@@ -257,6 +257,12 @@ async def end_streaming_session(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Not authorized to end this session"
             )
+        
+        # Stop and delete broadcast in Ant Media Server if it exists
+        ant_media_stream_id = session.get("ant_media_stream_id")
+        if ant_media_stream_id:
+            await ant_media_client.stop_broadcast(ant_media_stream_id)
+            await ant_media_client.delete_broadcast(ant_media_stream_id)
         
         # Update session status
         await db.streaming_sessions.update_one(
