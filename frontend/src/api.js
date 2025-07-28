@@ -182,6 +182,40 @@ export const streamingAPI = {
     return response.data;
   },
   
+  updateModelThumbnail: async (modelId, thumbnailData) => {
+    const response = await api.patch(`/streaming/models/${modelId}/thumbnail`, {
+      thumbnail: thumbnailData
+    });
+    return response.data;
+  },
+
+  // Ant Media Server Integration APIs
+  getAntMediaConfig: async () => {
+    const response = await api.get('/streaming/ant-media/config');
+    return response.data;
+  },
+
+  startAntMediaBroadcast: async (streamId) => {
+    const response = await api.post(`/streaming/ant-media/broadcast/${streamId}/start`);
+    return response.data;
+  },
+
+  stopAntMediaBroadcast: async (streamId) => {
+    const response = await api.post(`/streaming/ant-media/broadcast/${streamId}/stop`);
+    return response.data;
+  },
+
+  getAntMediaLiveBroadcasts: async () => {
+    const response = await api.get('/streaming/ant-media/broadcasts/live');
+    return response.data;
+  },
+
+  checkAntMediaHealth: async () => {
+    const response = await api.get('/streaming/ant-media/health');
+    return response.data;
+  },
+
+  // Legacy WebRTC methods (deprecated but kept for backward compatibility)
   sendWebRTCSignal: async (signalData) => {
     const response = await api.post('/streaming/webrtc/signal', signalData);
     return response.data;
@@ -189,13 +223,6 @@ export const streamingAPI = {
   
   getWebRTCSignals: async (sessionId) => {
     const response = await api.get(`/streaming/webrtc/signals/${sessionId}`);
-    return response.data;
-  },
-
-  updateModelThumbnail: async (modelId, thumbnailData) => {
-    const response = await api.patch(`/streaming/models/${modelId}/thumbnail`, {
-      thumbnail: thumbnailData
-    });
     return response.data;
   },
 
