@@ -76,7 +76,7 @@ async def create_streaming_session(
     request: StreamingSessionRequest,
     current_user: User = Depends(get_current_user)
 ):
-    """Create a streaming session (public or private)"""
+    """Create a streaming session using Ant Media Server"""
     try:
         db = await get_database()
         
@@ -94,8 +94,23 @@ async def create_streaming_session(
                 detail="Model is currently unavailable"
             )
         
-        # Create session
+        # Create unique stream ID for Ant Media Server
         session_id = str(uuid.uuid4())
+        ant_media_stream_id = f"stream_{session_id}"
+        
+        # Create broadcast in Ant Media Server
+        broadcast_info = await ant_media_client.create_broadcast(
+            stream_id=ant_media_stream_id,
+            name=f"Stream for model {request.model_id}",
+            type="liveStream",
+            publicStream=True if request.session_type == "public" else False
+        )
+        
+        # Get Ant Media WebRTC configuration
+        ant_media_config = await ant_media_client.get_webrtc_config()
+        ant_media_config["stream_id"] = ant_media_stream_id
+        
+        # Create session data
         session_data = {
             "_id": session_id,
             "model_id": request.model_id,
@@ -103,7 +118,8 @@ async def create_streaming_session(
             "session_type": request.session_type,
             "status": "active",
             "created_at": datetime.utcnow(),
-            "webrtc_config": WEBRTC_CONFIG
+            "ant_media_stream_id": ant_media_stream_id,
+            "ant_media_config": ant_media_config
         }
         
         # Store session in database
@@ -116,7 +132,7 @@ async def create_streaming_session(
                 {"$inc": {"total_viewers": 1}}
             )
         
-        logger.info(f"Streaming session created: {session_id} for model {request.model_id}")
+        logger.info(f"Created Ant Media streaming session: {session_id} with stream ID: {ant_media_stream_id}")
         
         return StreamingSessionResponse(
             session_id=session_id,
@@ -125,7 +141,8 @@ async def create_streaming_session(
             session_type=request.session_type,
             status="active",
             created_at=session_data["created_at"],
-            webrtc_config=WEBRTC_CONFIG
+            ant_media_config=ant_media_config,
+            stream_id=ant_media_stream_id
         )
         
     except HTTPException:
