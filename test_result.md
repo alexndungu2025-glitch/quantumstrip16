@@ -383,10 +383,9 @@
 
 ## test_plan:
   current_focus:
-    - "Comprehensive streaming platform UI with Chat Integration"
-    - "Complete User Flow Testing: Registration, Login, Dashboards, Token Purchase, Streaming"
+    - "WebRTC Session Sharing Fix"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 ## agent_communication:
