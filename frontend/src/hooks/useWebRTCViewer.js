@@ -106,13 +106,13 @@ export const useWebRTCViewer = () => {
     try {
       console.log(`Connecting to stream for model: ${modelIdParam}`);
       
-      // Create streaming session with the model
-      const sessionResponse = await streamingAPI.createStreamingSession({
+      // Join the model's existing streaming session instead of creating a new one
+      const sessionResponse = await streamingAPI.joinStreamingSession({
         model_id: modelIdParam,
         session_type: 'public'
       });
       
-      console.log('Streaming session created:', sessionResponse.session_id);
+      console.log('Joined streaming session:', sessionResponse.session_id);
       streamSessionId.current = sessionResponse.session_id;
       
       // Initialize peer connection
@@ -125,9 +125,9 @@ export const useWebRTCViewer = () => {
       });
       
       await pc.setLocalDescription(offer);
-      console.log('Local description set, sending offer');
+      console.log('Local description set, sending offer to model');
       
-      // Send offer to model
+      // Send offer to model (using model ID as target, not viewer ID)
       await sendSignalingMessage(modelIdParam, {
         type: 'offer',
         offer: offer
