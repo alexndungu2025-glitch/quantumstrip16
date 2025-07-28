@@ -61,15 +61,6 @@ class WebRTCSignalRequest(BaseModel):
     signal_data: Dict[str, Any]
     target_user_id: str
 
-# Basic WebRTC configuration
-WEBRTC_CONFIG = {
-    "iceServers": [
-        {"urls": "stun:stun.l.google.com:19302"},
-        {"urls": "stun:stun1.l.google.com:19302"},
-        # Add TURN servers here for production
-    ]
-}
-
 # Streaming Session Routes
 @router.post("/session", response_model=StreamingSessionResponse)
 async def create_streaming_session(
