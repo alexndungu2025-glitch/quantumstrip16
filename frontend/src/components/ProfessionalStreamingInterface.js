@@ -98,7 +98,7 @@ const ProfessionalHeader = ({ user, onLogout, tokenBalance }) => {
                     <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-50">
                       <div className="py-2">
                         <button
-                          onClick={() => navigate('/dashboard')}
+                          onClick={() => navigate('/viewer-dashboard')}
                           className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700"
                         >
                           My Profile
