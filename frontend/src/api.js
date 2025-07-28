@@ -134,6 +134,16 @@ export const streamingAPI = {
     const response = await api.post('/streaming/session', sessionData);
     return response.data;
   },
+
+  joinStreamingSession: async (sessionData) => {
+    const response = await api.post('/streaming/session/join', sessionData);
+    return response.data;
+  },
+
+  getModelStreamingSession: async (modelId) => {
+    const response = await api.get(`/streaming/models/${modelId}/session`);
+    return response.data;
+  },
   
   endStreamingSession: async (sessionId) => {
     const response = await api.delete(`/streaming/session/${sessionId}`);
