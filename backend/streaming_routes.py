@@ -771,89 +771,120 @@ async def update_model_status(
             detail="Failed to update model status"
         )
 
-# WebRTC Signaling Routes (for development, in production use WebSocket)
-@router.post("/webrtc/signal")
-async def webrtc_signal(
-    request: WebRTCSignalRequest,
+# Ant Media Server Integration Routes
+@router.get("/ant-media/config")
+async def get_ant_media_config():
+    """Get Ant Media Server configuration for client connections"""
+    try:
+        config = await ant_media_client.get_webrtc_config()
+        return config
+    except Exception as e:
+        logger.error(f"Error getting Ant Media config: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get Ant Media configuration"
+        )
+
+@router.post("/ant-media/broadcast/{stream_id}/start")
+async def start_ant_media_broadcast(
+    stream_id: str,
     current_user: User = Depends(get_current_user)
 ):
-    """Handle WebRTC signaling (offer/answer/ice-candidate)"""
+    """Start a broadcast in Ant Media Server"""
     try:
-        db = await get_database()
-        
-        # Verify session exists and user is authorized
-        session = await db.streaming_sessions.find_one({"_id": request.session_id})
-        if not session:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Streaming session not found"
-            )
-        
-        if current_user.id not in [session["viewer_id"], session["model_id"]]:
+        # Verify user is a model
+        if current_user.role != UserRole.MODEL:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not authorized for this session"
+                detail="Only models can start broadcasts"
             )
         
-        # Store signaling data (in production, this would be sent via WebSocket)
-        signal_data = {
-            "_id": str(uuid.uuid4()),
-            "session_id": request.session_id,
-            "from_user_id": current_user.id,
-            "to_user_id": request.target_user_id,
-            "signal_type": request.signal_type,
-            "signal_data": request.signal_data,
-            "created_at": datetime.utcnow()
-        }
+        # Start the broadcast
+        success = await ant_media_client.start_broadcast(stream_id)
         
-        await db.webrtc_signals.insert_one(signal_data)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to start broadcast"
+            )
         
         return {
             "success": True,
-            "message": "Signal sent successfully",
-            "signal_id": signal_data["_id"]
+            "message": "Broadcast started successfully",
+            "stream_id": stream_id
         }
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error processing WebRTC signal: {e}")
+        logger.error(f"Error starting broadcast: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to process WebRTC signal"
+            detail="Failed to start broadcast"
         )
 
-@router.get("/webrtc/signals/{session_id}")
-async def get_webrtc_signals(
-    session_id: str,
+@router.post("/ant-media/broadcast/{stream_id}/stop")
+async def stop_ant_media_broadcast(
+    stream_id: str,
     current_user: User = Depends(get_current_user)
 ):
-    """Get pending WebRTC signals for a session"""
+    """Stop a broadcast in Ant Media Server"""
     try:
-        db = await get_database()
+        # Stop the broadcast
+        success = await ant_media_client.stop_broadcast(stream_id)
         
-        # Get signals for this user
-        signals = await db.webrtc_signals.find({
-            "session_id": session_id,
-            "to_user_id": current_user.id
-        }).sort("created_at", 1).to_list(length=None)
-        
-        # Delete retrieved signals
-        if signals:
-            signal_ids = [signal["_id"] for signal in signals]
-            await db.webrtc_signals.delete_many({"_id": {"$in": signal_ids}})
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to stop broadcast"
+            )
         
         return {
             "success": True,
-            "signals": signals
+            "message": "Broadcast stopped successfully",
+            "stream_id": stream_id
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error getting WebRTC signals: {e}")
+        logger.error(f"Error stopping broadcast: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to get WebRTC signals"
+            detail="Failed to stop broadcast"
         )
+
+@router.get("/ant-media/broadcasts/live")
+async def get_ant_media_live_broadcasts():
+    """Get list of live broadcasts from Ant Media Server"""
+    try:
+        broadcasts = await ant_media_client.get_live_broadcasts()
+        return {
+            "success": True,
+            "broadcasts": broadcasts
+        }
+    except Exception as e:
+        logger.error(f"Error getting live broadcasts: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get live broadcasts"
+        )
+
+@router.get("/ant-media/health")
+async def ant_media_health_check():
+    """Check Ant Media Server health status"""
+    try:
+        is_healthy = await ant_media_client.health_check()
+        return {
+            "healthy": is_healthy,
+            "message": "Ant Media Server is healthy" if is_healthy else "Ant Media Server is not responding"
+        }
+    except Exception as e:
+        logger.error(f"Error checking Ant Media health: {e}")
+        return {
+            "healthy": False,
+            "message": "Failed to check Ant Media Server health"
+        }
 
 class ThumbnailUpdateRequest(BaseModel):
     thumbnail: str = Field(..., description="Base64 encoded thumbnail image")
