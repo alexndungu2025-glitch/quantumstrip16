@@ -537,6 +537,42 @@ async def get_live_models():
             detail="Failed to get live models"
         )
 
+@router.get("/models/{model_id}/session")
+async def get_model_streaming_session(model_id: str):
+    """Get the active streaming session for a specific model"""
+    try:
+        db = await get_database()
+        
+        # Find the model's active streaming session
+        session = await db.streaming_sessions.find_one({
+            "model_id": model_id,
+            "session_type": "public",
+            "status": "active"
+        })
+        
+        if not session:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No active streaming session found for this model"
+            )
+        
+        return {
+            "session_id": session["_id"],
+            "model_id": session["model_id"],
+            "status": session["status"],
+            "created_at": session["created_at"],
+            "webrtc_config": session.get("webrtc_config", WEBRTC_CONFIG)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting model streaming session: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get model streaming session"
+        )
+
 @router.get("/models/online")
 async def get_online_models():
     """Get count of currently online models (including both live and available)"""
