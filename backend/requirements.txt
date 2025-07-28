@@ -27,3 +27,4 @@ mysql-connector-python==9.4.0
 sqlalchemy==2.0.41
 bcrypt==4.3.0
 websockets>=12.0
+httpx>=0.27.0
