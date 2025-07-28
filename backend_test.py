@@ -625,6 +625,9 @@ class QuantumStripTester:
         # Continuation Requirements Tests (New Review Request)
         self.test_continuation_requirements()
         
+        # WebRTC Session Sharing Fix Tests (Latest Implementation)
+        self.test_webrtc_session_sharing_fix()
+        
         # Print final results
         self.print_final_results()
 
