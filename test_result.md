@@ -316,7 +316,7 @@
         comment: "🚧 TASK IDENTIFIED: Fix camera opening for 1 second then 404 error. Backend tests show all APIs working correctly, so issue is likely in frontend WebRTC implementation or API call handling."
       - working: true
         agent: "main"
-        comment: "✅ CAMERA 404 ERROR FIXED: Root cause was incorrect REACT_APP_BACKEND_URL in frontend/.env file. Updated from old URL 'https://8361e0a6-5111-4bb4-9ca2-ed487bd9ae86.preview.emergentagent.com'. This was causing 403 Forbidden errors when creating streaming sessions. Backend testing confirmed all streaming endpoints work perfectly (132 tests passed). Frontend services restarted to load new URL configuration."
+        comment: "✅ CAMERA 404 ERROR FIXED: Root cause was incorrect REACT_APP_BACKEND_URL in frontend/.env file. Updated from old URL 'https://d93fd791-fed9-41a9-9e19-630adb5da9e3.preview.emergentagent.com'. This was causing 403 Forbidden errors when creating streaming sessions. Backend testing confirmed all streaming endpoints work perfectly (132 tests passed). Frontend services restarted to load new URL configuration."
 
   - task: "Implement Thumbnail Capture for Live Streams"
     implemented: true
