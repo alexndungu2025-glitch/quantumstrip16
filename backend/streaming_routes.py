@@ -644,7 +644,7 @@ async def get_live_models():
 
 @router.get("/models/{model_id}/session")
 async def get_model_streaming_session(model_id: str):
-    """Get the active streaming session for a specific model"""
+    """Get the active streaming session for a specific model with Ant Media Server info"""
     try:
         db = await get_database()
         
@@ -661,12 +661,23 @@ async def get_model_streaming_session(model_id: str):
                 detail="No active streaming session found for this model"
             )
         
+        # Get Ant Media stream info
+        ant_media_stream_id = session.get("ant_media_stream_id")
+        if not ant_media_stream_id:
+            # For backward compatibility, create stream ID
+            ant_media_stream_id = f"stream_{session['_id']}"
+        
+        # Get current Ant Media configuration
+        ant_media_config = await ant_media_client.get_webrtc_config()
+        ant_media_config["stream_id"] = ant_media_stream_id
+        
         return {
             "session_id": session["_id"],
             "model_id": session["model_id"],
             "status": session["status"],
             "created_at": session["created_at"],
-            "webrtc_config": session.get("webrtc_config", WEBRTC_CONFIG)
+            "ant_media_config": ant_media_config,
+            "stream_id": ant_media_stream_id
         }
         
     except HTTPException:
