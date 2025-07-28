@@ -135,6 +135,75 @@ async def create_streaming_session(
             detail="Failed to create streaming session"
         )
 
+@router.post("/session/join")
+async def join_streaming_session(
+    request: StreamingSessionRequest,
+    current_user: User = Depends(get_current_user)
+):
+    """Join an existing streaming session (for viewers)"""
+    try:
+        db = await get_database()
+        
+        # Verify model exists and is available
+        model_profile = await db.model_profiles.find_one({"_id": request.model_id})
+        if not model_profile:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Model not found"
+            )
+        
+        if not model_profile.get("is_live", False):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Model is not currently live"
+            )
+        
+        # Find the model's existing streaming session
+        existing_session = await db.streaming_sessions.find_one({
+            "model_id": request.model_id,
+            "session_type": request.session_type,
+            "status": "active"
+        })
+        
+        if not existing_session:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No active streaming session found for this model"
+            )
+        
+        # Add viewer to the existing session as a participant
+        participant_data = {
+            "_id": str(uuid.uuid4()),
+            "session_id": existing_session["_id"],
+            "viewer_id": current_user.id,
+            "joined_at": datetime.utcnow(),
+            "status": "active"
+        }
+        
+        # Store participant record
+        await db.session_participants.insert_one(participant_data)
+        
+        logger.info(f"Viewer {current_user.id} joined session: {existing_session['_id']} for model {request.model_id}")
+        
+        return StreamingSessionResponse(
+            session_id=existing_session["_id"],
+            model_id=existing_session["model_id"],
+            viewer_id=current_user.id,
+            session_type=existing_session["session_type"],
+            status=existing_session["status"],
+            created_at=existing_session["created_at"],
+            webrtc_config=existing_session.get("webrtc_config", WEBRTC_CONFIG)
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error joining streaming session: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to join streaming session"
+        )
+
 @router.delete("/session/{session_id}")
 async def end_streaming_session(
     session_id: str,
