@@ -9,6 +9,7 @@ import os
 from auth import get_current_user
 from database import get_database
 from models import User, UserRole, ModelProfile, PrivateShow, Transaction, TransactionType, TransactionStatus
+from ant_media_client import ant_media_client
 
 logger = logging.getLogger(__name__)
 
