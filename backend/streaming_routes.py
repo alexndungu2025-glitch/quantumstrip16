@@ -159,11 +159,11 @@ async def join_streaming_session(
     request: StreamingSessionRequest,
     current_user: User = Depends(get_current_user)
 ):
-    """Join an existing streaming session (for viewers)"""
+    """Join an existing streaming session using Ant Media Server"""
     try:
         db = await get_database()
         
-        # Verify model exists and is available
+        # Verify model exists and is live
         model_profile = await db.model_profiles.find_one({"_id": request.model_id})
         if not model_profile:
             raise HTTPException(
@@ -190,6 +190,16 @@ async def join_streaming_session(
                 detail="No active streaming session found for this model"
             )
         
+        # Get Ant Media stream info
+        ant_media_stream_id = existing_session.get("ant_media_stream_id")
+        if not ant_media_stream_id:
+            # For backward compatibility, create new stream ID
+            ant_media_stream_id = f"stream_{existing_session['_id']}"
+            
+        # Get current Ant Media configuration
+        ant_media_config = await ant_media_client.get_webrtc_config()
+        ant_media_config["stream_id"] = ant_media_stream_id
+        
         # Add viewer to the existing session as a participant
         participant_data = {
             "_id": str(uuid.uuid4()),
@@ -202,7 +212,7 @@ async def join_streaming_session(
         # Store participant record
         await db.session_participants.insert_one(participant_data)
         
-        logger.info(f"Viewer {current_user.id} joined session: {existing_session['_id']} for model {request.model_id}")
+        logger.info(f"Viewer {current_user.id} joined Ant Media session: {existing_session['_id']} for model {request.model_id}")
         
         return StreamingSessionResponse(
             session_id=existing_session["_id"],
@@ -211,7 +221,8 @@ async def join_streaming_session(
             session_type=existing_session["session_type"],
             status=existing_session["status"],
             created_at=existing_session["created_at"],
-            webrtc_config=existing_session.get("webrtc_config", WEBRTC_CONFIG)
+            ant_media_config=ant_media_config,
+            stream_id=ant_media_stream_id
         )
         
     except HTTPException:
