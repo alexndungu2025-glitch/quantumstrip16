@@ -46,19 +46,27 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   return children;
 };
 
+// Helper function to determine redirect path for authenticated users
+const getAuthenticatedRedirectPath = (user) => {
+  if (user?.role === 'viewer') {
+    return '/';
+  }
+  return '/dashboard';
+};
+
 // App Routes Component
 const AppRoutes = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   
   return (
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<ProfessionalStreamingInterface />} />
       <Route path="/login" element={
-        isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />
+        isAuthenticated ? <Navigate to={getAuthenticatedRedirectPath(user)} replace /> : <LoginPage />
       } />
       <Route path="/register" element={
-        isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage />
+        isAuthenticated ? <Navigate to={getAuthenticatedRedirectPath(user)} replace /> : <RegisterPage />
       } />
       
       {/* Protected Routes */}
